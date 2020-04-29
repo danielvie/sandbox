@@ -2,25 +2,28 @@ CXX      = g++
 CC       = gcc
 
 # CONFIGURACOES
-pwd      = C:\ProgramData\Anaconda3
-pyd      = hello.pyd
+pwd_lib  = /usr/include
+pwd_inc  = /usr/include/python3.6m
+pwd_npy  = /home/daniel/.local/lib/python3.6/site-packages/numpy/core/include
+
+pyd      =  hello.so
 
 
 # declare  = -D_hypot = hypot
-DECLARE  = -DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+DECLARE  = -DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION -fPIC
 
-INCLUDE  = -I${pwd}\include \
-		   -I${pwd}\Lib\site-packages\numpy\core\include
+INCLUDE  = -I${pwd_inc} \
+		   -I${pwd_npy}
 
 cflags   = -O0 ${DECLARE}
 CXXFLAGS = -O0 ${INCLUDE} ${DECLARE}
-LDFLAGS  = -L${pwd} -shared -lpython37
+LDFLAGS  = -L${pwd_lib} -shared -lpython3.6m
 
 
 src      = $(wildcard src/*.c*)
-
 obj      = $(addsuffix .o, $(basename $(src:src/%=obj/%)))
 
+			
 all: r
 
 p:
