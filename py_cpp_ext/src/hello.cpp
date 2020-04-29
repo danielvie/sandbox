@@ -7,11 +7,14 @@
 #include "utils.h"
 
 /* METHODS CALLS */
-static PyObject* get_v(PyObject *self, PyObject *args);
+static PyObject* get_vetor(PyObject *self, PyObject *args);
+static PyObject* send_vetor(PyObject *self, PyObject *args);
 static PyObject* soma(PyObject *self, PyObject *args);
 
+
 static PyMethodDef hello_methods[] = {
-        {"get_v", get_v, METH_VARARGS,"numpy function tester",},
+        {"get_vetor", get_vetor, METH_VARARGS,"numpy function tester",},
+        {"send_vetor", send_vetor, METH_VARARGS,"numpy function tester",},
         {"soma", soma, METH_VARARGS,"numpy function tester",},
         {NULL, NULL, 0, NULL}
 };
@@ -34,7 +37,7 @@ PyMODINIT_FUNC PyInit_hello(void) {
 }
 
 // METHODS
-static PyObject* get_v(PyObject *self, PyObject *args) {
+static PyObject* get_vetor(PyObject *self, PyObject *args) {
     /* RETURNING VALUE OF 'a' */
     std::vector<double> bla;
     int len;
@@ -50,6 +53,30 @@ static PyObject* get_v(PyObject *self, PyObject *args) {
     return Py_BuildValue("O", create_pyarray(bla.data(), len));
 }
 
+static PyObject* send_vetor(PyObject *self, PyObject *args) {
+    /* RETURNING VALUE OF 'a' */
+    
+    std::vector<double> bla;
+    PyObject *value;
+
+    if (!PyArg_ParseTuple(args, "O", &value)){
+        return NULL;
+    }
+
+    bla = get_vetor_double(value);
+
+    std::vector<double>::iterator it;
+    
+    printf("\nIMPRIMINDO VETOR ENVIADO:\n");
+    for(it = bla.begin(); it != bla.end(); it++) {
+        printf("%f\n", *it);
+    }
+    printf("\nfim IMPRIMINDO VETOR ENVIADO:\n");
+
+    
+    return Py_BuildValue("");
+}
+
 static PyObject* soma(PyObject *self, PyObject *args) {
     
     float a, b;
@@ -57,9 +84,6 @@ static PyObject* soma(PyObject *self, PyObject *args) {
     if (!PyArg_ParseTuple(args, "ff", &a, &b))
         return NULL;
     
-    /* ASSIGNING VALUE OF 'a' */
-    // Py_RETURN_NONE;
-
-    return Py_BuildValue("f", a+b);;
+    return Py_BuildValue("f", a+b);
 
 }

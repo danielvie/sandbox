@@ -7,7 +7,10 @@
 #include <numpy/numpyconfig.h>
 
 #include <cstdio>
+#include <vector>
+#include <string>
 
 PyArrayObject* create_pyarray(double data[], int len);
+std::vector<double> get_vetor_double(PyObject* array);
 
 #endif // __UTILS__
