@@ -10,7 +10,7 @@ def get_bezier(P, N = 100):
         [-1,  3, -3, 1],
     ])
     
-    #montando matriz T
+    # montando matriz T
     ONES = np.ones([N, 1])
     t = np.linspace(0, 1, N)
     T = np.column_stack([ONES, t, t**2, t**3])
