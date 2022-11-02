@@ -23,7 +23,7 @@ import hello_pb2_grpc
 class Greeter(hello_pb2_grpc.GreeterServicer):
 
     def SayHello(self, request, context):
-        return hello_pb2.HelloReply(message='Hello, %s!' % request.name)
+        return hello_pb2.HelloReply(message='Hello from python server, your message is: `%s`!' % request.name)
 
     def SayHelloNro(self, request, context):
         msg = f'Hello, {request.name}, {request.nro}!'
