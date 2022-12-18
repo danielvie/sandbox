@@ -14,18 +14,21 @@
 
 syntax = "proto3";
 
+package helloworld;
+
 option java_multiple_files = true;
 option java_package = "io.grpc.examples.helloworld";
 option java_outer_classname = "HelloWorldProto";
 option objc_class_prefix = "HLW";
+option csharp_namespace = "GrpcGreeter";
 
-package helloworld;
 
 // The greeting service definition.
 service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply) {}
   rpc SayHelloNro (HelloNroRequest) returns (HelloReply) {}
+  rpc SayBogus (BogusRequest) returns (BogusReply) {}
 }
 
 // The request message containing the user's name.
@@ -40,5 +43,18 @@ message HelloNroRequest {
 
 // The response message containing the greetings
 message HelloReply {
+  string message = 1;
+}
+
+message BogusRequest {
+  oneof type {
+    string string = 1;
+    int64 integer = 2;
+    bool boolean = 3;
+    float decimal = 4;
+  }
+}
+
+message BogusReply {
   string message = 1;
 }

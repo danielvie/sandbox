@@ -22,18 +22,33 @@ import hello_pb2
 import hello_pb2_grpc
 
 def run():
-    # NOTE(gRPC Python Team): .close() is possible on a channel and should be
-    # used in circumstances in which the with statement does not fit the needs
-    # of the code.
+
     with grpc.insecure_channel('localhost:50051') as channel:
 
         stub = hello_pb2_grpc.GreeterStub(channel)
 
-        response = stub.SayHello(hello_pb2.HelloRequest(name='you'))
-        print("Greeter client received: " + response.message)
+        # response = stub.SayHello(hello_pb2.HelloRequest(name='you'))
+        # print("Greeter client received: " + response.message)
         
-        response = stub.SayHelloNro(hello_pb2.HelloNroRequest(name='eu', nro=1))
+        # response = stub.SayHelloNro(hello_pb2.HelloNroRequest(name='eu', nro=1))
+        # print("Greeter client received: " + response.message)
+
+        response = stub.SayBogus(hello_pb2.BogusRequest(string="mandei um texto"))
         print("Greeter client received: " + response.message)
+
+        response = stub.SayBogus(hello_pb2.BogusRequest(integer=8))
+        print("Greeter client received: " + response.message)
+
+        response = stub.SayBogus(hello_pb2.BogusRequest(boolean=True))
+        print("Greeter client received: " + response.message)
+
+        response = stub.SayBogus(hello_pb2.BogusRequest(decimal=8.89))
+        print("Greeter client received: " + response.message)
+
+#   string string = 1;
+#   int64 integer = 2;
+#   bool boolean = 3;
+#   float decimal = 4;
 
 if __name__ == '__main__':
     logging.basicConfig()

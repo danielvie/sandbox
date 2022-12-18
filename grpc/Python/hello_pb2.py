@@ -14,13 +14,15 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bhello.proto\x12\nhelloworld\"\x1c\n\x0cHelloRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\",\n\x0fHelloNroRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0b\n\x03nro\x18\x02 \x01(\x05\"\x1d\n\nHelloReply\x12\x0f\n\x07message\x18\x01 \x01(\t2\xd4\x01\n\x07Greeter\x12>\n\x08SayHello\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\"\x00\x12\x43\n\rSayHelloAgain\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\"\x00\x12\x44\n\x0bSayHelloNro\x12\x1b.helloworld.HelloNroRequest\x1a\x16.helloworld.HelloReply\"\x00\x42\x36\n\x1bio.grpc.examples.helloworldB\x0fHelloWorldProtoP\x01\xa2\x02\x03HLWb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bhello.proto\x12\nhelloworld\"\x1c\n\x0cHelloRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\",\n\x0fHelloNroRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0b\n\x03nro\x18\x02 \x01(\x05\"\x1d\n\nHelloReply\x12\x0f\n\x07message\x18\x01 \x01(\t\"Q\n\x0c\x42ogusRequest\x12\x0e\n\x06string\x18\x01 \x01(\t\x12\x0f\n\x07integer\x18\x02 \x01(\x03\x12\x0f\n\x07\x62oolean\x18\x03 \x01(\x08\x12\x0f\n\x07\x64\x65\x63imal\x18\x04 \x01(\x02\"\x1d\n\nBogusReply\x12\x0f\n\x07message\x18\x01 \x01(\t2\xcf\x01\n\x07Greeter\x12>\n\x08SayHello\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\"\x00\x12\x44\n\x0bSayHelloNro\x12\x1b.helloworld.HelloNroRequest\x1a\x16.helloworld.HelloReply\"\x00\x12>\n\x08SayBogus\x12\x18.helloworld.BogusRequest\x1a\x16.helloworld.BogusReply\"\x00\x42\x36\n\x1bio.grpc.examples.helloworldB\x0fHelloWorldProtoP\x01\xa2\x02\x03HLWb\x06proto3')
 
 
 
 _HELLOREQUEST = DESCRIPTOR.message_types_by_name['HelloRequest']
 _HELLONROREQUEST = DESCRIPTOR.message_types_by_name['HelloNroRequest']
 _HELLOREPLY = DESCRIPTOR.message_types_by_name['HelloReply']
+_BOGUSREQUEST = DESCRIPTOR.message_types_by_name['BogusRequest']
+_BOGUSREPLY = DESCRIPTOR.message_types_by_name['BogusReply']
 HelloRequest = _reflection.GeneratedProtocolMessageType('HelloRequest', (_message.Message,), {
   'DESCRIPTOR' : _HELLOREQUEST,
   '__module__' : 'hello_pb2'
@@ -42,6 +44,20 @@ HelloReply = _reflection.GeneratedProtocolMessageType('HelloReply', (_message.Me
   })
 _sym_db.RegisterMessage(HelloReply)
 
+BogusRequest = _reflection.GeneratedProtocolMessageType('BogusRequest', (_message.Message,), {
+  'DESCRIPTOR' : _BOGUSREQUEST,
+  '__module__' : 'hello_pb2'
+  # @@protoc_insertion_point(class_scope:helloworld.BogusRequest)
+  })
+_sym_db.RegisterMessage(BogusRequest)
+
+BogusReply = _reflection.GeneratedProtocolMessageType('BogusReply', (_message.Message,), {
+  'DESCRIPTOR' : _BOGUSREPLY,
+  '__module__' : 'hello_pb2'
+  # @@protoc_insertion_point(class_scope:helloworld.BogusReply)
+  })
+_sym_db.RegisterMessage(BogusReply)
+
 _GREETER = DESCRIPTOR.services_by_name['Greeter']
 if _descriptor._USE_C_DESCRIPTORS == False:
 
@@ -53,6 +69,10 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _HELLONROREQUEST._serialized_end=101
   _HELLOREPLY._serialized_start=103
   _HELLOREPLY._serialized_end=132
-  _GREETER._serialized_start=135
-  _GREETER._serialized_end=347
+  _BOGUSREQUEST._serialized_start=134
+  _BOGUSREQUEST._serialized_end=215
+  _BOGUSREPLY._serialized_start=217
+  _BOGUSREPLY._serialized_end=246
+  _GREETER._serialized_start=249
+  _GREETER._serialized_end=456
 # @@protoc_insertion_point(module_scope)

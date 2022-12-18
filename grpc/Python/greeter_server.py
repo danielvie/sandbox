@@ -23,12 +23,31 @@ import hello_pb2_grpc
 class Greeter(hello_pb2_grpc.GreeterServicer):
 
     def SayHello(self, request, context):
+        print('recebi mensagem:', request.name)
         return hello_pb2.HelloReply(message='Hello from python server, your message is: `%s`!' % request.name)
 
     def SayHelloNro(self, request, context):
         msg = f'Hello, {request.name}, {request.nro}!'
         print(msg)
         return hello_pb2.HelloReply(message=msg)
+    
+    def SayBogus(self, request, context):
+        
+        msg = 'error, nao sei que tipo eh isso'
+        
+        if request.string:
+            msg = f"isso foi uma string, value: `{request.string}`"
+        elif request.integer:
+            msg = f"isso foi um integer, value: `{request.integer}`"
+        elif request.decimal:
+            msg = f"isso foi um decimal, value: `{request.decimal}`"
+        elif request.boolean:
+            msg = f"isso foi um boolean, value: `{request.boolean}`"
+
+        print('request:')
+        print(request)
+        print('end request:')
+        return hello_pb2.BogusReply(message=msg)
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
