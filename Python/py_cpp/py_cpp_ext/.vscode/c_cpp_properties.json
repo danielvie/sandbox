@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/ProgramData/Anaconda3",
+                "C:/ProgramData/Anaconda3/Lib/site-packages/numpy/core/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.17763.0",
+            "compilerPath": "C:/mingw64/bin/g++.exe"
+            
+        }
+    ],
+    "version": 4
+}

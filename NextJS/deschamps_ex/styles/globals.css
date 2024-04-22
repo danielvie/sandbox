@@ -1,0 +1,7 @@
+
+/* Inside "styles/style.css" */
+html, body {
+	background-color: rgb(237, 199, 189);
+	/* color: rgb(223, 213, 213); */
+	font-family: sans-serif;
+}

@@ -1,0 +1,36 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    width: 100%;
+    /* position:relative; */
+}
+
+.containner-buttons {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+
+div {
+    border: 0px solid black;
+    position: relative;
+    background-color: aliceblue;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: relative;
+}
+.flip-v {
+    transform: scaleX(-1);
+}
+.flip-h {
+    transform: scaleY(-1);
+}

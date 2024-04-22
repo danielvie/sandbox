@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch SmartDoorSut",
+            "request": "launch",
+            "mainClass": "SmartDoorSut",
+            "projectName": "standalone-smartdoor-java_62599b91"
+        },
+        {
+            "type": "java",
+            "name": "Launch SmartDoorSut",
+            "request": "launch",
+            "mainClass": "SmartDoorSut",
+            "projectName": "standalone-smartdoor-java_7e4d0955"
+        },
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch SmartDoorSut",
+            "request": "launch",
+            "mainClass": "SmartDoorSut",
+            "projectName": "standalone-smartdoor-java_4930133e"
+        }
+    ]
+}

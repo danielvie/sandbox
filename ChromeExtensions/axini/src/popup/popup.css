@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    section button {
+        /* @apply w-full bg-sky-600 hover:bg-sky-700 text-white cursor-pointer p-1 mt-1 rounded-md hover:shadow-md hover:shadow-gray-800 */
+        @apply w-full bg-sky-600 hover:bg-sky-700 text-white px-1 py-2 mt-1 rounded-md border-2 border-sky-950
+    }
+}

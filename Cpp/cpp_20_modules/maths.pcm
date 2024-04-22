@@ -1,0 +1,17 @@
+# 1 "maths.cpp"
+# 1 "<built-in>" 1
+# 1 "<built-in>" 3
+# 489 "<built-in>" 3
+# 1 "<command line>" 1
+# 1 "<built-in>" 2
+# 1 "maths.cpp" 2
+
+export module maths;
+
+export int add(int a, int b) {
+    return a + b;
+}
+
+export int subtract(int a, int b) {
+    return a - b;
+}

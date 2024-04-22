@@ -1,0 +1,20 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+CC	Makefile	/^CC            = gcc$/;"	m
+CFLAGS	Makefile	/^CFLAGS       = -O0 -g -Wall ${INCLUDE} ${DECLARE}$/;"	m
+CXX	Makefile	/^CXX           = g++$/;"	m
+CXXFLAGS	Makefile	/^CXXFLAGS     = -O0 -std=c++17 -g -Wall ${INCLUDE} ${DECLARE}$/;"	m
+DECLARE	Makefile	/^DECLARE       = $/;"	m
+INCLUDE	Makefile	/^INCLUDE       = -Isrc -Ilib -Iinclude$/;"	m
+LDFLAGS	Makefile	/^LDFLAGS      = $/;"	m
+app	Makefile	/^app           = main.exe$/;"	m
+break_line	Makefile	/^break_line = \\\\\\\\\\\\n$/;"	m
+break_line	Makefile	/^break_line = \\\\\\\\n$/;"	m
+lib	Makefile	/^lib           = $(wildcard lib\/*.c*)$/;"	m
+main	src/main.cpp	/^int main()$/;"	f
+obj	Makefile	/^obj           = $(addsuffix .o,$(basename $(src:src\/%=obj\/%)))$/;"	m
+src	Makefile	/^src           = $(wildcard src\/*.c*)$/;"	m

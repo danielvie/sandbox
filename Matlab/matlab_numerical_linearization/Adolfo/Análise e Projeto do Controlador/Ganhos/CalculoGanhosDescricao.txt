@@ -1,0 +1,103 @@
+Dados de Entrada -- BV9_30_03
+
+Parametros de Sintonia malha de arfagem
+
+Modelo de referência = wn = 4 e zeta = 0.7;
+
+M = 1.35;
+A = 0.05;
+wb = 5;
+
+Alt = 2 e Vel = 4;
+
+Kp = 0.5704;
+Kd = 0.1288;
+
+wcg = 10.8 rad/s e MF = 54.4°
+
+Sintonia malha de rolamento
+
+tr = 0.25;
+zeta = 0.75;
+
+Sintonia malha de yaw damper
+zeta = 0.7;
+
+
+-- Dia 30/03 - Dados de Entrada -- BV9_30_03 - Caso Nominal --
+Modelo de referência = wn = 4 e zeta = 0.7;
+
+M = 1.35;
+A = 0.05;
+wb = 5;
+Wu = 1;
+
+Alt = 2 (1000 m) e Vel = 4 (220m/s);
+Kp = 0.6088;
+Kd = 0.1366;
+wcg = 10.2 rad/s e MF = 54.4° 
+
+
+Sintonia malha de rolamento
+
+tr = 0.25;
+zeta = 0.75;
+
+Sintonia malha de yaw damper
+zeta = 0.7;
+
+---------------xxxxxxx---------------------
+
+Dia 13/04/2015 - Dados de Entrada -- BV9_30_03 -- Caso 1
+Ldelta = reduzido de 50%
+
+Sintonia malha de rolamento
+
+tr = 0.25;
+zeta = 0.75;
+
+--------------xxxxxxx----------------------
+
+Dia 07/05/2015 - Dados de Entrada -- BV9_30_03 -- Caso 2
+
+Sintonia malha de rolamento
+
+tr = 0.4;
+zeta = 0.75;
+
+-------------xxxxxxx----------------------
+
+Dia 07/05/2015 - Dados de Entrada -- BV9_30_03 -- Caso 3
+
+Sintonia malha de yaw-damper
+
+zeta = 0.55;
+
+
+Dia 07/05/2015 - Dados de Entrada -- BV9_30_03 -- Caso 4
+
+Sintonia malha de yaw-damper
+
+zeta = 0.85;
+
+
+
+------------xxxxxxx------------------------
+
+Dados de Entrada BV9 - com cg 10cm para trás -- Caso 5
+
+M = 1.35 
+A = 0.05
+wb = 5; wn = 4 e zeta =0.7
+Wu = 0;
+wcg = 8.0 rad/s e MF = 54.6
+
+------------xxxxxxxxx------------------------
+
+Dados de Entrada BV9 - com cg 10cm para trás -- Caso 6 Ainda não implementei
+
+M = 1.35 
+A = 0.05
+wb = 5; wn = 4 e zeta =0.7
+Wu = 0;
+wcg = 11.3 rad/s e MF = 54.6

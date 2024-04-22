@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Mado Extension",
+  "description": "The description of your extension",
+  "version": "1.0",
+  "icons": {
+    "16": "icons/icon.png",
+    "32": "icons/icon.png",
+    "48": "icons/icon.png",
+    "128": "icons/icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon.png",
+      "32": "icons/icon.png",
+      "48": "icons/icon.png",
+      "128": "icons/icon.png"
+    },
+    "permissions": ["tabs"],
+    "default_popup": "./popup/popup.html"
+
+  },
+  "options_page": "options/options.html",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "js": ["./content.js"],
+      "matches": ["*://chat.openai.com/*"],
+      "run_at": "document_end"
+    }
+  ]
+}

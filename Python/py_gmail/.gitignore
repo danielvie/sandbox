@@ -1,0 +1,14 @@
+build
+dist
+myscript.spec
+.DS_Store
+
+
+*.pickle
+*.exe
+
+*.exe
+
+__pycache__
+credential.json
+main.spec

@@ -1,0 +1,1 @@
+(()=>{"use strict";const e=document.getElementById("btn-click");null==e||e.addEventListener("click",(()=>{console.log("asdfasdf")}))})();

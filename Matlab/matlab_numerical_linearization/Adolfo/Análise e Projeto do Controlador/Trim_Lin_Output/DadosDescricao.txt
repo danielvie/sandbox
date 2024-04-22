@@ -1,0 +1,5 @@
+DadosInput_Output
+
+BV9_26_03 --- > Equivale a propriedades de massa do dia 26/03/2015 (Excel) e BV9
+BV9_30_03 --- > Equivale a propriedades de massa do dia 30/03/2015 (PPT)   e BV9
+BV9CG --- > Equivale a propriedades de massa do dia 30/03/2015 (PPT)   e BV9 + O cg na direção x foi 10cm para trás

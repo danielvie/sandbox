@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Mado Extension",
+  "description": "The description of your extension",
+  "version": "2.8",
+  "permissions": ["tabs", "storage"],
+  "icons": {
+    "16": "icons/icon.png",
+    "32": "icons/icon.png",
+    "48": "icons/icon.png",
+    "128": "icons/icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon.png",
+      "32": "icons/icon.png",
+      "48": "icons/icon.png",
+      "128": "icons/icon.png"
+    },
+    "default_popup": "./popup.html"
+
+  },
+  "content_scripts": [
+    {
+      "js": ["./content.js"],
+      "matches": ["*://*/*"],
+      "css": ["custom.css"],
+      "run_at": "document_end"
+    }
+  ]
+}

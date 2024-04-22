@@ -1,0 +1,2 @@
+r:
+	python generate.py

@@ -1,0 +1,6 @@
+Arquivos
+
+aerxy_cruz_sf = sendo x um número representando a versão do banco consolidade e y uma letra representado pequenas alterações
+
+aer8_cruz_sf = Banco de Dados V9 (com a translação do momento feito da forma correta) - BV9
+aer9_cruz_sf = Banco de Dados V9 (com a translação do momento feito da forma errada)  - BV9a

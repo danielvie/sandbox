@@ -1,0 +1,7 @@
+A	py_automate/Makefile
+A	py_automate/main.py
+A	py_automate/py_pathlib/Makefile
+A	py_automate/py_pathlib/bla/ble/newfile.txt
+A	py_automate/py_pathlib/main.py
+A	py_automate/py_pathlib/newfile.txt
+A	py_compare_list/Makefile

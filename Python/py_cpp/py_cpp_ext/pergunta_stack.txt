@@ -1,0 +1,112 @@
+titulo: 
+
+Bind a Python attribute into a C++ variable on a C++ extension
+
+corpo:
+
+I'm trying to make compile a c++ code into an extension for Python but i'm having some troubles assigning values into the C++ code and also reading them into Python.
+
+I have created methods to assign and read values that looks like this:
+
+```python
+import hello
+
+if __name__ == "__main__":
+	
+	# GET THE VALUE OF 'a'
+	a = hello.get_a()
+	print('the value of \'a\' is:',a)	
+	
+	# SET A VALUE FOR 'a'
+	hello.set_a(5.0)
+	
+	# GET THE VALUE OF 'a'
+	a = hello.get_a()
+	print('the value of \'a\' is:',a)	
+```
+	
+that generates:
+```
+the value of 'a' is: 1.0
+the value of 'a' is: 5.0
+```
+
+What I want to do is do it in a simpler way, like binding an attribute of Python with the value of the C++ variable:
+
+```python
+import hello
+
+if __name__ == "__main__":
+	
+	# GET THE VALUE OF 'a'
+	print('the value of \'a\' is:',hello.a)	
+	
+	# SET A VALUE FOR 'a'
+	hello.a = 5.0
+	
+	# GET THE VALUE OF 'a'
+	print('the value of \'a\' is:',hello.a)	
+```
+
+An example of my wrapper: 
+
+```cpp
+#include <Python.h>
+
+/* EXAMPLE OF A CLASS WITH VALUE */
+class example {
+    public:
+        float a;
+        example(float a_init);    
+};
+
+example::example(float a_init){
+    this->a = a_init;
+}
+
+example ex(1.0);
+
+/* METHODS CALLS */
+static PyObject* get_a(PyObject *self, PyObject *args);
+static PyObject* set_a(PyObject *self, PyObject *args);
+
+static PyMethodDef hello_methods[] = {
+        {"get_a", get_a, METH_VARARGS,"numpy function tester",},
+        {"set_a", set_a, METH_VARARGS,"numpy function tester",},
+        {NULL, NULL, 0, NULL}
+};
+
+/* MODULE */
+static struct PyModuleDef hello_definition = {
+        PyModuleDef_HEAD_INIT,
+        "hello",
+        "A Python module that prints 'hello world' from C code.",
+        -1,
+        hello_methods
+};
+
+/* INIT MODULE */
+PyMODINIT_FUNC PyInit_hello(void) {
+    Py_Initialize();
+    return PyModule_Create(&hello_definition);
+}
+
+// METHODS
+static PyObject* get_a(PyObject *self, PyObject *args) {
+    /* RETURNING VALUE OF 'a' */
+    return Py_BuildValue("f", ex.a);;
+}
+
+static PyObject* set_a(PyObject *self, PyObject *args) {
+    
+    float value;
+    if (!PyArg_ParseTuple(args, "f", &value))
+        return NULL;
+    
+    /* ASSIGNING VALUE OF 'a' */
+    ex.a = value;
+    Py_RETURN_NONE;
+}
+```
+
+Is it possible to do it?

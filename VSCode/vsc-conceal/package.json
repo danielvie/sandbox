@@ -1,0 +1,2991 @@
+{
+  "name": "vsc-conceal",
+  "displayName": "Conceal",
+  "description": "Displays identifiers & symbols using more aesthetically pleasing symbols.",
+  "version": "0.2.3",
+  "publisher": "BRBoer",
+  "license": "MIT license (MIT)",
+  "engines": {
+    "vscode": "^1.20.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "conceal.copyWithSubstitutions",
+        "title": "Copy with Substitutions",
+        "category": "Conceal"
+      },
+      {
+        "command": "conceal.enablePrettySymbols",
+        "title": "Enable",
+        "category": "Conceal"
+      },
+      {
+        "command": "conceal.disablePrettySymbols",
+        "title": "Disable",
+        "category": "Conceal"
+      },
+      {
+        "command": "conceal.togglePrettySymbols",
+        "title": "Toggle",
+        "category": "Conceal"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Conceal",
+      "properties": {
+        "conceal.revealOn": {
+          "enum": [
+            "cursor",
+            "cursor-inside",
+            "active-line",
+            "selection",
+            "none"
+          ],
+          "description": "When to reveal the original text. Options are -- 'cursor': reveal when a cursor contacts a symbol; 'cursor-inside': reveal when a cursor is inside a symbol; 'active-line': reveal all symbols on the same line as a cursor; 'selection': reveal all symbols that are selected or contact a cursor; 'none': do not reveal. This option may be overriden per-language by specifying 'revealOn' in a language entry.",
+          "default": "cursor"
+        },
+        "conceal.adjustCursorMovement": {
+          "type": "boolean",
+          "description": "If enabled, cursor movement will treat 'pretty' symbols as one character instead of stepping through the underlying 'ugly' text (this does not currently cover all situations). This option may be overriden per-language by specifying 'adjustCursorMovement' in a language entry.",
+          "default": false
+        },
+        "conceal.prettyCursor": {
+          "enum": [
+            "boxed",
+            "none"
+          ],
+          "description": "Controls how a 'concealed' symbol is rendered when contacted by a cursor. Options are -- 'boxed': render an outline around the symbol; 'none': no change. This option may be overriden per-language by specifying 'prettyCursor' in a language entry.",
+          "default": "boxed"
+        },
+        "conceal.substitutions": {
+          "type": "array",
+          "description": "A list of substitution settings can be specified for each language.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "description": "A pattern, or list of patterns, to specify which languages to apply these substitutions on.",
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "description": "A language-id (e.g. 'plaintext' or 'fsharp')"
+                        },
+                        {
+                          "type": "object",
+                          "description": "A complex filter",
+                          "properties": {
+                            "language": {
+                              "type": "string",
+                              "description": "A language-id (e.g. 'plaintext' or 'fsharp')"
+                            },
+                            "pattern": {
+                              "type": "string",
+                              "description": "glob pattern"
+                            },
+                            "scheme": {
+                              "type": "string",
+                              "description": "e.g. 'https' or 'file'"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "string",
+                    "description": "A language-id (e.g. 'plaintext' or 'fsharp')"
+                  },
+                  {
+                    "type": "object",
+                    "description": "A complex filter",
+                    "properties": {
+                      "language": {
+                        "type": "string",
+                        "description": "A language-id (e.g. 'plaintext' or 'fsharp')"
+                      },
+                      "pattern": {
+                        "type": "string",
+                        "description": "glob pattern"
+                      },
+                      "scheme": {
+                        "type": "string",
+                        "description": "e.g. 'https' or 'file'"
+                      }
+                    }
+                  }
+                ],
+                "default": [
+                  "coq",
+                  {
+                    "pattern": "**/*.v"
+                  }
+                ]
+              },
+              "revealOn": {
+                "enum": [
+                  "cursor",
+                  "cursor-inside",
+                  "active-line",
+                  "selection",
+                  "none"
+                ],
+                "description": "When to reveal the original text. Options are -- 'cursor': reveal when a cursor contacts a symbol; 'cursor-inside': reveal when a cursor is inside a symbol; 'active-line': reveal all symbols on the same line as a cursor; 'selection': reveal all symbols that are selected or contact a cursor; 'none': do not reveal.",
+                "default": "cursor"
+              },
+              "adjustCursorMovement": {
+                "type": "boolean",
+                "description": "If enabled, cursor movement will treat 'concealed' symbols as one character instead of stepping through the underlying 'ugly' text (this does not currently cover all situations).",
+                "default": false
+              },
+              "hideTextMethod": {
+                "enum": [
+                  "hack-fontSize",
+                  "hack-letterSpacing",
+                  "none"
+                ],
+                "description": "How to hide substituted text",
+                "default": "hack-letterSpacing"
+              },
+              "prettyCursor": {
+                "enum": [
+                  "boxed",
+                  "none"
+                ],
+                "description": "Controls how a 'conceal' symbol is rendered when contacted by a cursor. Options are -- 'boxed': render an outline around the symbol; 'none': no change",
+                "default": "none"
+              },
+              "combineIdenticalScopes": {
+                "type": "boolean",
+                "default": false,
+                "description": "If `true`, combine adjacent tokens if they have the same scope"
+              },
+              "textMateGrammar": {
+                "type": "string",
+                "description": "Specify the TextMate grammar file used to generate scope information for matching substitutions. If not specified, PSM will attempt to automatically find the grammar file that vscode uses."
+              },
+              "textMateInitialScope": {
+                "type": "string",
+                "description": "Override the initial scope used to identify the grammar. If undefined, then the initial scope will be inferred by searching for installed extensions that provide grammars for the current language."
+              },
+              "substitutions": {
+                "type": "array",
+                "description": "A list of substitutions",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "ugly": {
+                      "type": "string",
+                      "default": "\\b(Qed.)",
+                      "description": "A Javascript regular expression to specify the 'ugly' string to be replaced. For example, '\\\\\\b' matches a word boundary. Remember to escape your strings!! Writing '\\b' instead of '\\\\\\b' will denote a backspace instead of a word boundary. To match a literal backslash, you must write '\\\\\\\\\\\\\\' because it will be escaped by both JSON and Javascript's RegExp library. You may use non-matching groups, i.e. '(?:...)', but using matching groups, i.e. '(...)', will break substitutions."
+                    },
+                    "pretty": {
+                      "type": "string",
+                      "default": "∎",
+                      "description": "The text to replace an 'ugly' string with. You may use fancy unicode symbols and multiple characters."
+                    },
+                    "pre": {
+                      "type": "string",
+                      "description": "If specified, the text before the 'ugly' text must match this pattern. E.g. '\\\\\\b'"
+                    },
+                    "post": {
+                      "type": "string",
+                      "description": "If specified, the text following the 'ugly' text must match this pattern. E.g. '\\\\\\b'"
+                    },
+                    "scope": {
+                      "type": "string",
+                      "description": "A scope expression: a whitespace-separated list of scope-names. If specified, then the `ugly` regular expression is only checked against individual tokens of matching scopes."
+                    },
+                    "style": {
+                      "type": "object",
+                      "properties": {
+                        "hackCSS": {
+                          "type": "string",
+                          "description": "Hack: attempt to inject arbitrary CSS; this is unsupported and may cause problems"
+                        },
+                        "border": {
+                          "type": "string",
+                          "description": "CSS border property"
+                        },
+                        "textDecoration": {
+                          "type": "string",
+                          "description": "CSS text-decoration property",
+                          "anyOf": [
+                            {
+                              "pattern": "[^;]*"
+                            },
+                            {
+                              "enum": [
+                                "underline",
+                                "overline",
+                                "line-through"
+                              ]
+                            }
+                          ]
+                        },
+                        "color": {
+                          "type": "string",
+                          "description": "CSS color property"
+                        },
+                        "backgroundColor": {
+                          "type": "string",
+                          "description": "CSS background-color property"
+                        },
+                        "light": {
+                          "type": "object",
+                          "description": "Styling options for vscode light themes",
+                          "properties": {
+                            "hackCSS": {
+                              "type": "string",
+                              "description": "Hack: attempt to inject arbitrary CSS; this is unsupported and may cause problems"
+                            },
+                            "border": {
+                              "type": "string",
+                              "description": "CSS border property"
+                            },
+                            "textDecoration": {
+                              "type": "string",
+                              "description": "CSS text-decoration property",
+                              "anyOf": [
+                                {
+                                  "pattern": "[^;]*"
+                                },
+                                {
+                                  "enum": [
+                                    "underline",
+                                    "overline",
+                                    "line-through"
+                                  ]
+                                }
+                              ]
+                            },
+                            "color": {
+                              "type": "string",
+                              "description": "CSS color property"
+                            },
+                            "backgroundColor": {
+                              "type": "string",
+                              "description": "CSS background-color property"
+                            }
+                          }
+                        },
+                        "dark": {
+                          "type": "object",
+                          "description": "Styling options for vscode dark themes",
+                          "properties": {
+                            "hackCSS": {
+                              "type": "string",
+                              "description": "Hack: attempt to inject arbitrary CSS; this is unsupported and may cause problems"
+                            },
+                            "border": {
+                              "type": "string",
+                              "description": "CSS border property"
+                            },
+                            "textDecoration": {
+                              "type": "string",
+                              "description": "CSS text-decoration property",
+                              "anyOf": [
+                                {
+                                  "pattern": "[^;]*"
+                                },
+                                {
+                                  "enum": [
+                                    "underline",
+                                    "overline",
+                                    "line-through"
+                                  ]
+                                }
+                              ]
+                            },
+                            "color": {
+                              "type": "string",
+                              "description": "CSS color property"
+                            },
+                            "backgroundColor": {
+                              "type": "string",
+                              "description": "CSS background-color property"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "dependencies": {
+                    "pretty": [
+                      "ugly"
+                    ],
+                    "style": [
+                      "ugly"
+                    ]
+                  },
+                  "oneOf": [
+                    {
+                      "required": [
+                        "pretty"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "style"
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "required": [
+              "language",
+              "substitutions"
+            ]
+          },
+          "default": [
+            {
+              "language": [
+                "coq",
+                {
+                  "pattern": "**/*.v"
+                }
+              ],
+              "substitutions": [
+                {
+                  "pre": "\\b",
+                  "ugly": "forall",
+                  "post": "\\b",
+                  "pretty": "∀"
+                },
+                {
+                  "pre": "\\b",
+                  "ugly": "exists",
+                  "post": "\\b",
+                  "pretty": "∃"
+                },
+                {
+                  "pre": "\\b",
+                  "ugly": "fun",
+                  "post": "\\b",
+                  "pretty": "λ"
+                },
+                {
+                  "pre": "\\b",
+                  "ugly": "False",
+                  "post": "\\b",
+                  "pretty": "⊥"
+                },
+                {
+                  "pre": "\\b",
+                  "ugly": "True",
+                  "post": "\\b",
+                  "pretty": "⊤"
+                },
+                {
+                  "pre": "\\b",
+                  "ugly": "Defined[.]",
+                  "post": "(?:$|\\s)",
+                  "pretty": "□"
+                },
+                {
+                  "pre": "\\b",
+                  "ugly": "Admitted[.]",
+                  "post": "(?:$|\\s)",
+                  "pretty": "😱"
+                },
+                {
+                  "pre": "\\b",
+                  "ugly": "Proof[.]",
+                  "post": "(?:$|\\s)",
+                  "pretty": "∵"
+                },
+                {
+                  "pre": "\\b",
+                  "ugly": "Qed[.]",
+                  "post": "(?:$|\\s)",
+                  "pretty": "∎"
+                },
+                {
+                  "pre": "\\b",
+                  "ugly": "nat",
+                  "post": "\\b",
+                  "pretty": "ℕ"
+                },
+                {
+                  "pre": "[a-zA-Z]",
+                  "ugly": "_1",
+                  "post": "\\b",
+                  "pretty": "₁"
+                },
+                {
+                  "pre": "[a-zA-Z]",
+                  "ugly": "_2",
+                  "post": "\\b",
+                  "pretty": "₂"
+                },
+                {
+                  "pre": "[a-zA-Z]",
+                  "ugly": "_3",
+                  "post": "\\b",
+                  "pretty": "₃"
+                },
+                {
+                  "pre": "[a-zA-Z]",
+                  "ugly": "_4",
+                  "post": "\\b",
+                  "pretty": "₄"
+                },
+                {
+                  "pre": "[a-zA-Z]",
+                  "ugly": "_5",
+                  "post": "\\b",
+                  "pretty": "₅"
+                },
+                {
+                  "pre": "[a-zA-Z]",
+                  "ugly": "_6",
+                  "post": "\\b",
+                  "pretty": "₆"
+                },
+                {
+                  "pre": "[a-zA-Z]",
+                  "ugly": "_7",
+                  "post": "\\b",
+                  "pretty": "₇"
+                },
+                {
+                  "pre": "[a-zA-Z]",
+                  "ugly": "_8",
+                  "post": "\\b",
+                  "pretty": "₈"
+                },
+                {
+                  "pre": "[a-zA-Z]",
+                  "ugly": "_9",
+                  "post": "\\b",
+                  "pretty": "₉"
+                },
+                {
+                  "pre": "[a-zA-Z]",
+                  "ugly": "_0",
+                  "post": "\\b",
+                  "pretty": "₀"
+                },
+                {
+                  "ugly": "/\\\\",
+                  "pretty": "∧"
+                },
+                {
+                  "ugly": "\\\\/",
+                  "pretty": "∨"
+                },
+                {
+                  "ugly": "=>",
+                  "pretty": "⇒"
+                },
+                {
+                  "ugly": ":=",
+                  "pretty": "≜"
+                },
+                {
+                  "ugly": "<->",
+                  "pretty": "⟷"
+                },
+                {
+                  "ugly": "->",
+                  "pretty": "⟶"
+                },
+                {
+                  "ugly": "<-",
+                  "pretty": "←"
+                },
+                {
+                  "ugly": "<>",
+                  "pretty": "≠"
+                }
+              ]
+            },
+            {
+              "language": "haskell",
+              "substitutions": [
+                {
+                  "ugly": "\\\\",
+                  "pretty": "λ",
+                  "post": "\\s*(?:\\w|_).*?\\s*->"
+                },
+                {
+                  "ugly": "<-",
+                  "pretty": "←"
+                },
+                {
+                  "ugly": "->",
+                  "pretty": "→"
+                },
+                {
+                  "ugly": "==",
+                  "pretty": "≡"
+                },
+                {
+                  "ugly": "/=",
+                  "pretty": "≢"
+                },
+                {
+                  "ugly": "\\(\\)",
+                  "pretty": "∅"
+                },
+                {
+                  "ugly": "sqrt\\s?",
+                  "pretty": "√",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "&&",
+                  "pretty": "∧"
+                },
+                {
+                  "ugly": "\\|\\|",
+                  "pretty": "∨"
+                },
+                {
+                  "ugly": "not\\s?",
+                  "pretty": "¬",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": ">",
+                  "pretty": ">",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "<",
+                  "pretty": "<",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": ">=",
+                  "pretty": "≥",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "<=",
+                  "pretty": "≤",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "alpha",
+                  "pretty": "α",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "beta",
+                  "pretty": "β",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "gamma",
+                  "pretty": "γ",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "delta",
+                  "pretty": "δ",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "''",
+                  "pretty": "″"
+                },
+                {
+                  "ugly": "'",
+                  "pretty": "′"
+                },
+                {
+                  "ugly": "!!",
+                  "pretty": "‼"
+                },
+                {
+                  "ugly": "\\.\\.",
+                  "pretty": "…"
+                },
+                {
+                  "ugly": "undefined",
+                  "pretty": "⊥"
+                },
+                {
+                  "ugly": "`elem`",
+                  "pretty": "∈"
+                },
+                {
+                  "ugly": "`notElem`",
+                  "pretty": "∉"
+                },
+                {
+                  "ugly": "`isSubsetOf`",
+                  "pretty": "⊆"
+                },
+                {
+                  "ugly": "`union`",
+                  "pretty": "⋃"
+                },
+                {
+                  "ugly": "`intersect`",
+                  "pretty": "⋂"
+                }
+              ]
+            },
+            {
+              "language": "idris",
+              "substitutions": [
+                {
+                  "ugly": "\\\\",
+                  "pretty": "λ",
+                  "post": "\\s*(?:\\w|_).*?\\s*=>"
+                },
+                {
+                  "ugly": "<-",
+                  "pretty": "←"
+                },
+                {
+                  "ugly": "->",
+                  "pretty": "→"
+                },
+                {
+                  "ugly": "==",
+                  "pretty": "≡"
+                },
+                {
+                  "ugly": "/=",
+                  "pretty": "≢"
+                },
+                {
+                  "ugly": "\\(\\)",
+                  "pretty": "∅"
+                },
+                {
+                  "ugly": "sqrt\\s?",
+                  "pretty": "√",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "&&",
+                  "pretty": "∧"
+                },
+                {
+                  "ugly": "\\|\\|",
+                  "pretty": "∨"
+                },
+                {
+                  "ugly": "not\\s?",
+                  "pretty": "¬",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": ">",
+                  "pretty": ">",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "<",
+                  "pretty": "<",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": ">=",
+                  "pretty": "≥",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "<=",
+                  "pretty": "≤",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "alpha",
+                  "pretty": "α",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "beta",
+                  "pretty": "β",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "gamma",
+                  "pretty": "γ",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "delta",
+                  "pretty": "δ",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "''",
+                  "pretty": "″"
+                },
+                {
+                  "ugly": "'",
+                  "pretty": "′"
+                },
+                {
+                  "ugly": "=>",
+                  "pretty": "⇒"
+                },
+                {
+                  "ugly": "\\\\\\\\",
+                  "pretty": "∖"
+                }
+              ]
+            },
+            {
+              "language": "ocaml",
+              "substitutions": [
+                {
+                  "ugly": "fun",
+                  "pretty": "λ",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "<-",
+                  "pretty": "←"
+                },
+                {
+                  "ugly": "->",
+                  "pretty": "→"
+                },
+                {
+                  "ugly": "=",
+                  "pretty": "=",
+                  "pre": "[^<>=!]|^",
+                  "post": "[^<>=]|$"
+                },
+                {
+                  "ugly": "==",
+                  "pretty": "≡"
+                },
+                {
+                  "ugly": "!=",
+                  "pretty": "≢"
+                },
+                {
+                  "ugly": "<>",
+                  "pretty": "≠"
+                },
+                {
+                  "ugly": "\\[\\]",
+                  "pretty": "ε"
+                },
+                {
+                  "ugly": "sqrt\\s?",
+                  "pretty": "√",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "&&",
+                  "pretty": "∧"
+                },
+                {
+                  "ugly": "\\|\\|",
+                  "pretty": "∨"
+                },
+                {
+                  "ugly": "not\\s?",
+                  "pretty": "¬",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": ">",
+                  "pretty": ">",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "<",
+                  "pretty": "<",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": ">=",
+                  "pretty": "≥",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "<=",
+                  "pretty": "≤",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "alpha",
+                  "pretty": "α",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "beta",
+                  "pretty": "β",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "gamma",
+                  "pretty": "γ",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "delta",
+                  "pretty": "δ",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "''",
+                  "pretty": "″"
+                },
+                {
+                  "ugly": "'",
+                  "pretty": "′"
+                },
+                {
+                  "ugly": "List[.]for_all",
+                  "pretty": "∀",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "List[.]exists",
+                  "pretty": "∃",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "List[.]mem",
+                  "pretty": "∈",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "\\|",
+                  "pretty": "║",
+                  "pre": "^\\s+"
+                }
+              ]
+            },
+            {
+              "language": "fsharp",
+              "substitutions": [
+                {
+                  "ugly": "fun",
+                  "pretty": "λ",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "<-",
+                  "pretty": "←"
+                },
+                {
+                  "ugly": "->",
+                  "pretty": "→"
+                },
+                {
+                  "ugly": "=",
+                  "pretty": "=",
+                  "pre": "[^<>=!]|^",
+                  "post": "[^<>=]|$"
+                },
+                {
+                  "ugly": "==",
+                  "pretty": "≡"
+                },
+                {
+                  "ugly": "!=",
+                  "pretty": "≢"
+                },
+                {
+                  "ugly": "<>",
+                  "pretty": "≠"
+                },
+                {
+                  "ugly": "sqrt\\s?",
+                  "pretty": "√",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "&&",
+                  "pretty": "∧"
+                },
+                {
+                  "ugly": "\\|\\|",
+                  "pretty": "∨"
+                },
+                {
+                  "ugly": "not\\s?",
+                  "pretty": "¬",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": ">",
+                  "pretty": ">",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "<",
+                  "pretty": "<",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": ">=",
+                  "pretty": "≥",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "<=",
+                  "pretty": "≤",
+                  "pre": "[^=\\-<>]|^",
+                  "post": "[^=\\-<>]|$"
+                },
+                {
+                  "ugly": "alpha",
+                  "pretty": "α",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "beta",
+                  "pretty": "β",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "gamma",
+                  "pretty": "γ",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "delta",
+                  "pretty": "δ",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "''",
+                  "pretty": "″"
+                },
+                {
+                  "ugly": "'",
+                  "pretty": "′"
+                },
+                {
+                  "ugly": "List[.]forall",
+                  "pretty": "∀",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": "List[.]exists",
+                  "pretty": "∃",
+                  "pre": "\\b",
+                  "post": "\\b"
+                },
+                {
+                  "ugly": ">>",
+                  "pretty": "≫",
+                  "pre": "[^=<>]|^",
+                  "post": "[^=<>]|$"
+                },
+                {
+                  "ugly": "<<",
+                  "pretty": "≪",
+                  "pre": "[^=<>]|^",
+                  "post": "[^=<>]|$"
+                },
+                {
+                  "ugly": "\\|",
+                  "pretty": "║",
+                  "pre": "^\\s+"
+                }
+              ]
+            },
+            {
+              "language": "latex",
+              "substitutions": [
+                {
+                  "ugly": "\\$",
+                  "pretty": "\null"
+                },
+                {
+                  "ugly": "\\\\\\[",
+                  "pretty": "\null"
+                },
+                {
+                  "ugly": "\\\\]",
+                  "pretty": "\null"
+                },
+                {
+                  "ugly": "\\\\leq",
+                  "pretty": "≤",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\geq",
+                  "pretty": "≥",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\cdots",
+                  "pretty": "⋯",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\vdots",
+                  "pretty": "⋮",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\ldots",
+                  "pretty": "…",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\ldots",
+                  "pretty": "…",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\top",
+                  "pretty": "⊤",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\bot",
+                  "pretty": "⊥",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\topbot",
+                  "pretty": "⌶",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\wedge",
+                  "pretty": "∧",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\vee",
+                  "pretty": "∨",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\cup",
+                  "pretty": "∪",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\cap",
+                  "pretty": "∩",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\otimes",
+                  "pretty": "⊗",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\oplus",
+                  "pretty": "⊕",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\bigoplus",
+                  "pretty": "⨁",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\neg",
+                  "pretty": "¬",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\forall",
+                  "pretty": "∀",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\exists",
+                  "pretty": "∃",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\nexists",
+                  "pretty": "∄",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\because",
+                  "pretty": "∵",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\therefore",
+                  "pretty": "∴",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\neq",
+                  "pretty": "≠",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\equiv",
+                  "pretty": "≡",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\mapsto",
+                  "pretty": "↦",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\mapsfrom",
+                  "pretty": "↤",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Mapsto",
+                  "pretty": "⤇",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Mapsfrom",
+                  "pretty": "⤆",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\longmapsto",
+                  "pretty": "⟼",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\mapsfrom",
+                  "pretty": "⟻",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Longmapsto",
+                  "pretty": "⟾",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Longmapsfrom",
+                  "pretty": "⟽",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\leftarrow",
+                  "pretty": "←",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\rightarrow",
+                  "pretty": "→",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\to",
+                  "pretty": "→",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\leftrightarrow",
+                  "pretty": "↔",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Leftarrow",
+                  "pretty": "⇐",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Rightarrow",
+                  "pretty": "⇒",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Leftrightarrow",
+                  "pretty": "⇔",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\longleftarrow",
+                  "pretty": "⟵",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\longrightarrow",
+                  "pretty": "⟶",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\longleftrightarrow",
+                  "pretty": "⟷",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Longrightarrow",
+                  "pretty": "⟹",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\implies",
+                  "pretty": "⟹",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Longleftarrow",
+                  "pretty": "⟸",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\impliedby",
+                  "pretty": "⟸",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Longleftrightarrow",
+                  "pretty": "⟺",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\iff",
+                  "pretty": "⟺",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\in",
+                  "pretty": "∈",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\notin",
+                  "pretty": "∉",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\pm",
+                  "pretty": "±",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\times",
+                  "pretty": "×",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\infty",
+                  "pretty": "∞",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\sum",
+                  "pretty": "∑",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\prod",
+                  "pretty": "∏",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\int",
+                  "pretty": "∫",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\iint",
+                  "pretty": "∬",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\iiint",
+                  "pretty": "∭",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\oint",
+                  "pretty": "∮",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\oiint",
+                  "pretty": "∯",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\oiiint",
+                  "pretty": "∰",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Gamma",
+                  "pretty": "Γ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Delta",
+                  "pretty": "Δ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Theta",
+                  "pretty": "Θ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Lambda",
+                  "pretty": "Λ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Xi",
+                  "pretty": "Ξ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Pi",
+                  "pretty": "Π",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Sigma",
+                  "pretty": "Σ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Upsilon",
+                  "pretty": "Υ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Phi",
+                  "pretty": "Φ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Psi",
+                  "pretty": "Ψ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\Omega",
+                  "pretty": "Ω",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\alpha",
+                  "pretty": "α",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\beta",
+                  "pretty": "β",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\gamma",
+                  "pretty": "γ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\delta",
+                  "pretty": "δ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\epsilon",
+                  "pretty": "𝜖",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\zeta",
+                  "pretty": "ζ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\eta",
+                  "pretty": "η",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\theta",
+                  "pretty": "θ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\iota",
+                  "pretty": "ι",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\kappa",
+                  "pretty": "κ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\lambda",
+                  "pretty": "λ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\mu",
+                  "pretty": "μ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\nu",
+                  "pretty": "ν",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\xi",
+                  "pretty": "ξ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\pi",
+                  "pretty": "π",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\rho",
+                  "pretty": "ρ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\varsigma",
+                  "pretty": "ς",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\sigma",
+                  "pretty": "σ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\tau",
+                  "pretty": "τ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\upsilon",
+                  "pretty": "υ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\phi",
+                  "pretty": "𝜙",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\chi",
+                  "pretty": "χ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\psi",
+                  "pretty": "ψ",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\omega",
+                  "pretty": "ω",
+                  "post": "\\b|_"
+                },
+                {
+                  "ugly": "\\\\mathbb{A}",
+                  "pretty": "𝔸"
+                },
+                {
+                  "ugly": "\\\\mathbb{B}",
+                  "pretty": "𝔹"
+                },
+                {
+                  "ugly": "\\\\mathbb{C}",
+                  "pretty": "ℂ"
+                },
+                {
+                  "ugly": "\\\\mathbb{D}",
+                  "pretty": "𝔻"
+                },
+                {
+                  "ugly": "\\\\mathbb{E}",
+                  "pretty": "𝔼"
+                },
+                {
+                  "ugly": "\\\\mathbb{F}",
+                  "pretty": "𝔽"
+                },
+                {
+                  "ugly": "\\\\mathbb{G}",
+                  "pretty": "𝔾"
+                },
+                {
+                  "ugly": "\\\\mathbb{H}",
+                  "pretty": "ℍ"
+                },
+                {
+                  "ugly": "\\\\mathbb{I}",
+                  "pretty": "𝕀"
+                },
+                {
+                  "ugly": "\\\\mathbb{J}",
+                  "pretty": "𝕁"
+                },
+                {
+                  "ugly": "\\\\mathbb{K}",
+                  "pretty": "𝕂"
+                },
+                {
+                  "ugly": "\\\\mathbb{L}",
+                  "pretty": "𝕃"
+                },
+                {
+                  "ugly": "\\\\mathbb{M}",
+                  "pretty": "𝕄"
+                },
+                {
+                  "ugly": "\\\\mathbb{N}",
+                  "pretty": "ℕ"
+                },
+                {
+                  "ugly": "\\\\mathbb{O}",
+                  "pretty": "𝕆"
+                },
+                {
+                  "ugly": "\\\\mathbb{P}",
+                  "pretty": "ℙ"
+                },
+                {
+                  "ugly": "\\\\mathbb{Q}",
+                  "pretty": "ℚ"
+                },
+                {
+                  "ugly": "\\\\mathbb{R}",
+                  "pretty": "ℝ"
+                },
+                {
+                  "ugly": "\\\\mathbb{S}",
+                  "pretty": "𝕊"
+                },
+                {
+                  "ugly": "\\\\mathbb{T}",
+                  "pretty": "𝕋"
+                },
+                {
+                  "ugly": "\\\\mathbb{U}",
+                  "pretty": "𝕌"
+                },
+                {
+                  "ugly": "\\\\mathbb{V}",
+                  "pretty": "𝕍"
+                },
+                {
+                  "ugly": "\\\\mathbb{W}",
+                  "pretty": "𝕎"
+                },
+                {
+                  "ugly": "\\\\mathbb{X}",
+                  "pretty": "𝕏"
+                },
+                {
+                  "ugly": "\\\\mathbb{Y}",
+                  "pretty": "𝕐"
+                },
+                {
+                  "ugly": "\\\\mathbb{Z}",
+                  "pretty": "ℤ"
+                },
+                {
+                  "ugly": "\\\\mathbb{a}",
+                  "pretty": "𝕒"
+                },
+                {
+                  "ugly": "\\\\mathbb{b}",
+                  "pretty": "𝕓"
+                },
+                {
+                  "ugly": "\\\\mathbb{c}",
+                  "pretty": "𝕔"
+                },
+                {
+                  "ugly": "\\\\mathbb{d}",
+                  "pretty": "𝕕"
+                },
+                {
+                  "ugly": "\\\\mathbb{e}",
+                  "pretty": "𝕖"
+                },
+                {
+                  "ugly": "\\\\mathbb{f}",
+                  "pretty": "𝕗"
+                },
+                {
+                  "ugly": "\\\\mathbb{g}",
+                  "pretty": "𝕘"
+                },
+                {
+                  "ugly": "\\\\mathbb{h}",
+                  "pretty": "𝕙"
+                },
+                {
+                  "ugly": "\\\\mathbb{i}",
+                  "pretty": "𝕚"
+                },
+                {
+                  "ugly": "\\\\mathbb{j}",
+                  "pretty": "𝕛"
+                },
+                {
+                  "ugly": "\\\\mathbb{k}",
+                  "pretty": "𝕜"
+                },
+                {
+                  "ugly": "\\\\mathbb{l}",
+                  "pretty": "𝕝"
+                },
+                {
+                  "ugly": "\\\\mathbb{m}",
+                  "pretty": "𝕞"
+                },
+                {
+                  "ugly": "\\\\mathbb{n}",
+                  "pretty": "𝕟"
+                },
+                {
+                  "ugly": "\\\\mathbb{o}",
+                  "pretty": "𝕠"
+                },
+                {
+                  "ugly": "\\\\mathbb{p}",
+                  "pretty": "𝕡"
+                },
+                {
+                  "ugly": "\\\\mathbb{q}",
+                  "pretty": "𝕢"
+                },
+                {
+                  "ugly": "\\\\mathbb{r}",
+                  "pretty": "𝕣"
+                },
+                {
+                  "ugly": "\\\\mathbb{s}",
+                  "pretty": "𝕤"
+                },
+                {
+                  "ugly": "\\\\mathbb{t}",
+                  "pretty": "𝕥"
+                },
+                {
+                  "ugly": "\\\\mathbb{u}",
+                  "pretty": "𝕦"
+                },
+                {
+                  "ugly": "\\\\mathbb{v}",
+                  "pretty": "𝕧"
+                },
+                {
+                  "ugly": "\\\\mathbb{w}",
+                  "pretty": "𝕨"
+                },
+                {
+                  "ugly": "\\\\mathbb{x}",
+                  "pretty": "𝕩"
+                },
+                {
+                  "ugly": "\\\\mathbb{y}",
+                  "pretty": "𝕪"
+                },
+                {
+                  "ugly": "\\\\mathbb{z}",
+                  "pretty": "𝕫"
+                },
+                {
+                    "ugly": "\\\\mathcal{A}",
+                    "pretty": "𝒜"
+                },
+                {
+                    "ugly": "\\\\mathcal{B}",
+                    "pretty": "ℬ"
+                },
+                {
+                    "ugly": "\\\\mathcal{C}",
+                    "pretty": "𝒞"
+                },
+                {
+                    "ugly": "\\\\mathcal{D}",
+                    "pretty": "𝒟"
+                },
+                {
+                    "ugly": "\\\\mathcal{E}",
+                    "pretty": "ℰ"
+                },
+                {
+                    "ugly": "\\\\mathcal{F}",
+                    "pretty": "ℱ"
+                },
+                {
+                    "ugly": "\\\\mathcal{G}",
+                    "pretty": "𝒢"
+                },
+                {
+                    "ugly": "\\\\mathcal{H}",
+                    "pretty": "ℋ"
+                },
+                {
+                    "ugly": "\\\\mathcal{I}",
+                    "pretty": "ℐ"
+                },
+                {
+                    "ugly": "\\\\mathcal{J}",
+                    "pretty": "𝒥"
+                },
+                {
+                    "ugly": "\\\\mathcal{K}",
+                    "pretty": "𝒦"
+                },
+                {
+                    "ugly": "\\\\mathcal{L}",
+                    "pretty": "ℒ"
+                },
+                {
+                    "ugly": "\\\\mathcal{M}",
+                    "pretty": "ℳ"
+                },
+                {
+                    "ugly": "\\\\mathcal{N}",
+                    "pretty": "𝒩"
+                },
+                {
+                    "ugly": "\\\\mathcal{O}",
+                    "pretty": "𝒪"
+                },
+                {
+                    "ugly": "\\\\mathcal{P}",
+                    "pretty": "𝒫"
+                },
+                {
+                    "ugly": "\\\\mathcal{Q}",
+                    "pretty": "𝒬"
+                },
+                {
+                    "ugly": "\\\\mathcal{R}",
+                    "pretty": "ℛ"
+                },
+                {
+                    "ugly": "\\\\mathcal{S}",
+                    "pretty": "𝒮"
+                },
+                {
+                    "ugly": "\\\\mathcal{T}",
+                    "pretty": "𝒯"
+                },
+                {
+                    "ugly": "\\\\mathcal{U}",
+                    "pretty": "𝒰"
+                },
+                {
+                    "ugly": "\\\\mathcal{V}",
+                    "pretty": "𝒱"
+                },
+                {
+                    "ugly": "\\\\mathcal{W}",
+                    "pretty": "𝒲"
+                },
+                {
+                    "ugly": "\\\\mathcal{X}",
+                    "pretty": "𝒳"
+                },
+                {
+                    "ugly": "\\\\mathcal{Y}",
+                    "pretty": "𝒴"
+                },
+                {
+                    "ugly": "\\\\mathcal{Z}",
+                    "pretty": "𝒵"
+                },
+                {
+                    "ugly": "\\\\aleph",
+                    "pretty": "ℵ"
+                },
+                {
+                    "ugly": "\\\\beth",
+                    "pretty": "ב"
+                },
+                {
+                    "ugly": "\\\\daleth",
+                    "pretty": "ד"
+                },
+                {
+                    "ugly": "\\\\gimel",
+                    "pretty": "ג"
+                },
+                {
+                    "ugly": "\\\\vartheta",
+                    "pretty": "ϑ"
+                },
+                {
+                    "ugly": "\\\\varOmega",
+                    "pretty": "𝛺"
+                },
+                {
+                    "ugly": "\\\\varXi",
+                    "pretty": "𝛯"
+                },
+                {
+                    "ugly": "\\\\varPhi",
+                    "pretty": "𝛷"
+                },
+                {
+                    "ugly": "\\\\varPsi",
+                    "pretty": "𝛹"
+                },
+                {
+                    "ugly": "\\\\varPi",
+                    "pretty": "𝛱"
+                },
+                {
+                    "ugly": "\\\\varUpsilon",
+                    "pretty": "𝛶"
+                },
+                {
+                    "ugly": "\\\\varSigma",
+                    "pretty": "𝛴"
+                },
+                {
+                    "ugly": "\\\\varGamma",
+                    "pretty": "𝛤"
+                },
+                {
+                    "ugly": "\\\\varepsilon",
+                    "pretty": "ε"
+                },
+                {
+                    "ugly": "\\\\varpi",
+                    "pretty": "ϖ"
+                },
+                {
+                    "ugly": "\\\\varrho",
+                    "pretty": "ϱ"
+                },
+                {
+                    "ugly": "\\\\varphi",
+                    "pretty": "φ"
+                },
+                {
+                    "ugly": "\\\\varDelta",
+                    "pretty": "𝛥"
+                },
+                {
+                    "ugly": "\\\\varTheta",
+                    "pretty": "𝛩"
+                },
+                {
+                    "ugly": "\\\\varLambda",
+                    "pretty": "𝛬"
+                },
+                {
+                    "ugly": "\\\\uparrow",
+                    "pretty": "↑"
+                },
+                {
+                    "ugly": "\\\\downarrow",
+                    "pretty": "↓"
+                },
+                {
+                    "ugly": "\\\\updownarrow",
+                    "pretty": "↕"
+                },
+                {
+                    "ugly": "\\\\Uparrow",
+                    "pretty": "⇑"
+                },
+                {
+                    "ugly": "\\\\Downarrow",
+                    "pretty": "⇓"
+                },
+                {
+                    "ugly": "\\\\Updownarrow",
+                    "pretty": "⇕"
+                },
+                {
+                    "ugly": "\\\\hookleftarrow",
+                    "pretty": "↩"
+                },
+                {
+                    "ugly": "\\\\hookrightarrow",
+                    "pretty": "↪"
+                },
+                {
+                    "ugly": "\\\\leftharpoonup",
+                    "pretty": "↼"
+                },
+                {
+                    "ugly": "\\\\rightharpoonup",
+                    "pretty": "⇀"
+                },
+                {
+                    "ugly": "\\\\leftharpoondown",
+                    "pretty": "↽"
+                },
+                {
+                    "ugly": "\\\\rightharpoondown",
+                    "pretty": "⇁"
+                },
+                {
+                    "ugly": "\\\\rightleftharpoons",
+                    "pretty": "⇌"
+                },
+                {
+                    "ugly": "\\\\leftrightharpoons",
+                    "pretty": "⇋"
+                },
+                {
+                    "ugly": "\\\\upharpoonleft",
+                    "pretty": "↿"
+                },
+                {
+                    "ugly": "\\\\downharpoonleft",
+                    "pretty": "⇃"
+                },
+                {
+                    "ugly": "\\\\upharpoonright",
+                    "pretty": "↾"
+                },
+                {
+                    "ugly": "\\\\downharpoonright",
+                    "pretty": "⇂"
+                },
+                {
+                    "ugly": "\\\\leadsto",
+                    "pretty": "↝"
+                },
+                {
+                    "ugly": "\\\\nearrow",
+                    "pretty": "↗"
+                },
+                {
+                    "ugly": "\\\\searrow",
+                    "pretty": "↘"
+                },
+                {
+                    "ugly": "\\\\nwarrow",
+                    "pretty": "↖"
+                },
+                {
+                    "ugly": "\\\\swarrow",
+                    "pretty": "↙"
+                },
+                {
+                    "ugly": "\\\\dashrightarrow",
+                    "pretty": "⇢"
+                },
+                {
+                    "ugly": "\\\\dashleftarrow",
+                    "pretty": "⇠"
+                },
+                {
+                    "ugly": "\\\\leftleftarrows",
+                    "pretty": "⇇"
+                },
+                {
+                    "ugly": "\\\\rightrightarrows",
+                    "pretty": "⇉"
+                },
+                {
+                    "ugly": "\\\\leftrightarrows",
+                    "pretty": "⇆"
+                },
+                {
+                    "ugly": "\\\\rightleftarrows",
+                    "pretty": "⇄"
+                },
+                {
+                    "ugly": "\\\\upuparrows",
+                    "pretty": "⇈"
+                },
+                {
+                    "ugly": "\\\\downdownarrows",
+                    "pretty": "⇊"
+                },
+                {
+                    "ugly": "\\\\twoheadleftarrow",
+                    "pretty": "↞"
+                },
+                {
+                    "ugly": "\\\\twoheadrightarrow",
+                    "pretty": "↠"
+                },
+                {
+                    "ugly": "\\\\leftarrowtail",
+                    "pretty": "↢"
+                },
+                {
+                    "ugly": "\\\\rightarrowtail",
+                    "pretty": "↣"
+                },
+                {
+                    "ugly": "\\\\rightsquigarrow",
+                    "pretty": "⇝"
+                },
+                {
+                    "ugly": "\\\\leftrightsquigarrow",
+                    "pretty": "↭"
+                },
+                {
+                    "ugly": "\\\\curvearrowleft",
+                    "pretty": "↶"
+                },
+                {
+                    "ugly": "\\\\curvearrowright",
+                    "pretty": "↷"
+                },
+                {
+                    "ugly": "\\\\circlearrowleft",
+                    "pretty": "↺"
+                },
+                {
+                    "ugly": "\\\\circlearrowright",
+                    "pretty": "↻"
+                },
+                {
+                    "ugly": "\\\\looparrowleft",
+                    "pretty": "↫"
+                },
+                {
+                    "ugly": "\\\\looparrowright",
+                    "pretty": "↬"
+                },
+                {
+                    "ugly": "\\\\Lsh",
+                    "pretty": "↰"
+                },
+                {
+                    "ugly": "\\\\Rsh",
+                    "pretty": "↱"
+                },
+                {
+                    "ugly": "\\\\Lleftarrow",
+                    "pretty": "⇚"
+                },
+                {
+                    "ugly": "\\\\Rrightarrow",
+                    "pretty": "⇛"
+                },
+                {
+                    "ugly": "\\\\multimap",
+                    "pretty": "⊸"
+                },
+                {
+                    "ugly": "\\\\coprod",
+                    "pretty": "∐"
+                },
+                {
+                    "ugly": "\\\\ast",
+                    "pretty": "∗",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\star",
+                    "pretty": "⋆"
+                },
+                {
+                    "ugly": "\\\\cdot",
+                    "pretty": "⋅"
+                },
+                {
+                    "ugly": "\\\\bullet",
+                    "pretty": "∙"
+                },
+                {
+                    "ugly": "\\\\circ",
+                    "pretty": "∘",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\bigcirc",
+                    "pretty": "◯"
+                },
+                {
+                    "ugly": "\\\\diamond",
+                    "pretty": "⋄",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\div",
+                    "pretty": "÷",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\circledast",
+                    "pretty": "⊛"
+                },
+                {
+                    "ugly": "\\\\circledcirc",
+                    "pretty": "⊚"
+                },
+                {
+                    "ugly": "\\\\circleddash",
+                    "pretty": "⊝"
+                },
+                {
+                    "ugly": "\\\\odot",
+                    "pretty": "⊙"
+                },
+                {
+                    "ugly": "\\\\oplus",
+                    "pretty": "⊕"
+                },
+                {
+                    "ugly": "\\\\oslash",
+                    "pretty": "⊘"
+                },
+                {
+                    "ugly": "\\\\ominus",
+                    "pretty": "⊖"
+                },
+                {
+                    "ugly": "\\\\dotplus",
+                    "pretty": "∔"
+                },
+                {
+                    "ugly": "\\\\divideontimes",
+                    "pretty": "⋇"
+                },
+                {
+                    "ugly": "\\\\mp",
+                    "pretty": "∓"
+                },
+                {
+                    "ugly": "\\\\wr",
+                    "pretty": "≀"
+                },
+                {
+                    "ugly": "\\\\boxplus",
+                    "pretty": "⊞"
+                },
+                {
+                    "ugly": "\\\\boxminus",
+                    "pretty": "⊟"
+                },
+                {
+                    "ugly": "\\\\boxtimes",
+                    "pretty": "⊠"
+                },
+                {
+                    "ugly": "\\\\boxdot",
+                    "pretty": "⊡"
+                },
+                {
+                    "ugly": "\\\\uplus",
+                    "pretty": "⊎"
+                },
+                {
+                    "ugly": "\\\\sqcap",
+                    "pretty": "⊓"
+                },
+                {
+                    "ugly": "\\\\sqcup",
+                    "pretty": "⊔"
+                },
+                {
+                    "ugly": "\\\\dagger",
+                    "pretty": "†"
+                },
+                {
+                    "ugly": "\\\\ddagger",
+                    "pretty": "‡"
+                },
+                {
+                    "ugly": "\\\\square",
+                    "pretty": "□"
+                },
+                {
+                    "ugly": "\\\\barwedge",
+                    "pretty": "⊼"
+                },
+                {
+                    "ugly": "\\\\veebar",
+                    "pretty": "⊻"
+                },
+                {
+                    "ugly": "\\\\Cap",
+                    "pretty": "⋒"
+                },
+                {
+                    "ugly": "\\\\Cup",
+                    "pretty": "⋓"
+                },
+                {
+                    "ugly": "\\\\curlywedge",
+                    "pretty": "⋏"
+                },
+                {
+                    "ugly": "\\\\curlyvee",
+                    "pretty": "⋎"
+                },
+                {
+                    "ugly": "\\\\bot",
+                    "pretty": "⊥"
+                },
+                {
+                    "ugly": "\\\\doublebarwedge",
+                    "pretty": "⩞"
+                },
+                {
+                    "ugly": "\\\\setminus",
+                    "pretty": "∖"
+                },
+                {
+                    "ugly": "\\\\rightthreetimes",
+                    "pretty": "⋌"
+                },
+                {
+                    "ugly": "\\\\leftthreetimes",
+                    "pretty": "⋋"
+                },
+                {
+                    "ugly": "\\\\cong",
+                    "pretty": "≅"
+                },
+                {
+                    "ugly": "\\\\sim",
+                    "pretty": "∼",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\simeq",
+                    "pretty": "≃"
+                },
+                {
+                    "ugly": "\\\\approx",
+                    "pretty": "≈",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\asymp",
+                    "pretty": "≍"
+                },
+                {
+                    "ugly": "\\\\doteq",
+                    "pretty": "≐",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\propto",
+                    "pretty": "∝"
+                },
+                {
+                    "ugly": "\\\\models",
+                    "pretty": "⊧"
+                },
+                {
+                    "ugly": "\\\\prec",
+                    "pretty": "≺",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\succ",
+                    "pretty": "≻",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\preceq",
+                    "pretty": "⪯"
+                },
+                {
+                    "ugly": "\\\\succeq",
+                    "pretty": "⪰"
+                },
+                {
+                    "ugly": "\\\\ll",
+                    "pretty": "≪",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\gg",
+                    "pretty": "≫",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\subset",
+                    "pretty": "⊂",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\supset",
+                    "pretty": "⊃",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\subseteq",
+                    "pretty": "⊆"
+                },
+                {
+                    "ugly": "\\\\supseteq",
+                    "pretty": "⊇"
+                },
+                {
+                    "ugly": "\\\\sqsubset",
+                    "pretty": "⊏",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\sqsupset",
+                    "pretty": "⊐",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\sqsupseteq",
+                    "pretty": "⊑",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\sqsubseteq",
+                    "pretty": "⊒",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\dashv",
+                    "pretty": "⊣"
+                },
+                {
+                    "ugly": "\\\\vdash",
+                    "pretty": "⊢"
+                },
+                {
+                    "ugly": "\\\\perp",
+                    "pretty": "⊥"
+                },
+                {
+                    "ugly": "\\\\bowtie",
+                    "pretty": "⋈"
+                },
+                {
+                    "ugly": "\\\\ltimes",
+                    "pretty": "⋉"
+                },
+                {
+                    "ugly": "\\\\rtimes",
+                    "pretty": "⋊"
+                },
+                {
+                    "ugly": "\\\\smile",
+                    "pretty": "⌣"
+                },
+                {
+                    "ugly": "\\\\frown",
+                    "pretty": "⌢"
+                },
+                {
+                    "ugly": "\\\\ni",
+                    "pretty": "∋"
+                },
+                {
+                    "ugly": "\\\\approxeq",
+                    "pretty": "≊"
+                },
+                {
+                    "ugly": "\\\\backsim",
+                    "pretty": "∽",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\backsimeq",
+                    "pretty": "∎"
+                },
+                {
+                    "ugly": "\\\\triangleq",
+                    "pretty": "≜"
+                },
+                {
+                    "ugly": "\\\\circeq",
+                    "pretty": "≗"
+                },
+                {
+                    "ugly": "\\\\bumpeq",
+                    "pretty": "≏"
+                },
+                {
+                    "ugly": "\\\\Bumpeq",
+                    "pretty": "≎"
+                },
+                {
+                    "ugly": "\\\\doteqdot",
+                    "pretty": "≑"
+                },
+                {
+                    "ugly": "\\\\fallingdotseq",
+                    "pretty": "≒"
+                },
+                {
+                    "ugly": "\\\\risingdotseq",
+                    "pretty": "≓"
+                },
+                {
+                    "ugly": "\\\\because",
+                    "pretty": "∵"
+                },
+                {
+                    "ugly": "\\\\eqcirc",
+                    "pretty": "≖"
+                },
+                {
+                    "ugly": "\\\\leqq",
+                    "pretty": "≦"
+                },
+                {
+                    "ugly": "\\\\geqq",
+                    "pretty": "≧"
+                },
+                {
+                    "ugly": "\\\\leqslant",
+                    "pretty": "⩽"
+                },
+                {
+                    "ugly": "\\\\geqslant",
+                    "pretty": "⩾"
+                },
+                {
+                    "ugly": "\\\\lessapprox",
+                    "pretty": "⪅"
+                },
+                {
+                    "ugly": "\\\\gtrapprox",
+                    "pretty": "⪆"
+                },
+                {
+                    "ugly": "\\\\lll",
+                    "pretty": "⋘"
+                },
+                {
+                    "ugly": "\\\\ggg",
+                    "pretty": "⋙"
+                },
+                {
+                    "ugly": "\\\\lessdot",
+                    "pretty": "⋖"
+                },
+                {
+                    "ugly": "\\\\gtrdot",
+                    "pretty": "⋗"
+                },
+                {
+                    "ugly": "\\\\lesssim",
+                    "pretty": "≲"
+                },
+                {
+                    "ugly": "\\\\gtrsim",
+                    "pretty": "≳"
+                },
+                {
+                    "ugly": "\\\\eqslantless",
+                    "pretty": "⪕"
+                },
+                {
+                    "ugly": "\\\\eqslantgtr",
+                    "pretty": "⪖"
+                },
+                {
+                    "ugly": "\\\\precsim",
+                    "pretty": "≾"
+                },
+                {
+                    "ugly": "\\\\succsim",
+                    "pretty": "≿"
+                },
+                {
+                    "ugly": "\\\\precapprox",
+                    "pretty": "⪷"
+                },
+                {
+                    "ugly": "\\\\succapprox",
+                    "pretty": "⪸"
+                },
+                {
+                    "ugly": "\\\\Subset",
+                    "pretty": "⋐"
+                },
+                {
+                    "ugly": "\\\\Supset",
+                    "pretty": "⋑"
+                },
+                {
+                    "ugly": "\\\\subseteqq",
+                    "pretty": "⫅"
+                },
+                {
+                    "ugly": "\\\\supseteqq",
+                    "pretty": "⫆"
+                },
+                {
+                    "ugly": "\\\\preccurlyeq",
+                    "pretty": "≼"
+                },
+                {
+                    "ugly": "\\\\succcurlyeq",
+                    "pretty": "≽"
+                },
+                {
+                    "ugly": "\\\\curlyeqprec",
+                    "pretty": "⋞"
+                },
+                {
+                    "ugly": "\\\\curlyeqsucc",
+                    "pretty": "⋟"
+                },
+                {
+                    "ugly": "\\\\blacktriangleleft",
+                    "pretty": "◀"
+                },
+                {
+                    "ugly": "\\\\blacktriangleright",
+                    "pretty": "▶"
+                },
+                {
+                    "ugly": "\\\\trianglelefteq",
+                    "pretty": "⊴"
+                },
+                {
+                    "ugly": "\\\\trianglerighteq",
+                    "pretty": "⊵"
+                },
+                {
+                    "ugly": "\\\\vartriangleleft",
+                    "pretty": "⊲"
+                },
+                {
+                    "ugly": "\\\\vartriangleright",
+                    "pretty": "⊳"
+                },
+                {
+                    "ugly": "\\\\lessgtr",
+                    "pretty": "≶"
+                },
+                {
+                    "ugly": "\\\\lesseqgtr",
+                    "pretty": "⋚"
+                },
+                {
+                    "ugly": "\\\\lesseqqgtr",
+                    "pretty": "⪋"
+                },
+                {
+                    "ugly": "\\\\gtreqqless",
+                    "pretty": "⪌"
+                },
+                {
+                    "ugly": "\\\\gtreqless",
+                    "pretty": "⋛"
+                },
+                {
+                    "ugly": "\\\\gtrless",
+                    "pretty": "≷"
+                },
+                {
+                    "ugly": "\\\\backepsilon",
+                    "pretty": "϶"
+                },
+                {
+                    "ugly": "\\\\between",
+                    "pretty": "≬"
+                },
+                {
+                    "ugly": "\\\\pitchfork",
+                    "pretty": "⋔"
+                },
+                {
+                    "ugly": "\\\\Vdash",
+                    "pretty": "⊩"
+                },
+                {
+                    "ugly": "\\\\vDash",
+                    "pretty": "⊨"
+                },
+                {
+                    "ugly": "\\\\Vvdash",
+                    "pretty": "⊪"
+                },
+                {
+                    "ugly": "\\\\ncong",
+                    "pretty": "≇"
+                },
+                {
+                    "ugly": "\\\\nmid",
+                    "pretty": "∤"
+                },
+                {
+                    "ugly": "\\\\nparallel",
+                    "pretty": "∦"
+                },
+                {
+                    "ugly": "\\\\nsim",
+                    "pretty": "≁"
+                },
+                {
+                    "ugly": "\\\\nVdash",
+                    "pretty": "⊮"
+                },
+                {
+                    "ugly": "\\\\nvDash",
+                    "pretty": "⊭"
+                },
+                {
+                    "ugly": "\\\\ntriangleleft",
+                    "pretty": "⋪",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\ntrianglelefteq",
+                    "pretty": "⋬"
+                },
+                {
+                    "ugly": "\\\\ntriangleright",
+                    "pretty": "⋫",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\ntrianglerighteq",
+                    "pretty": "⋭"
+                },
+                {
+                    "ugly": "\\\\nprec",
+                    "pretty": "⊀",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\nsucc",
+                    "pretty": "⊁",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\precnapprox",
+                    "pretty": "⪹"
+                },
+                {
+                    "ugly": "\\\\succnapprox",
+                    "pretty": "⪺"
+                },
+                {
+                    "ugly": "\\\\precnsim",
+                    "pretty": "⋨"
+                },
+                {
+                    "ugly": "\\\\succnsim",
+                    "pretty": "⋩"
+                },
+                {
+                    "ugly": "\\\\lnapprox",
+                    "pretty": "⪉"
+                },
+                {
+                    "ugly": "\\\\gnapprox",
+                    "pretty": "⪊"
+                },
+                {
+                    "ugly": "\\\\lneq",
+                    "pretty": "⪇",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\gneq",
+                    "pretty": "⪈",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\lneqq",
+                    "pretty": "≨"
+                },
+                {
+                    "ugly": "\\\\gneqq",
+                    "pretty": "≩"
+                },
+                {
+                    "ugly": "\\\\lnsim",
+                    "pretty": "⋦"
+                },
+                {
+                    "ugly": "\\\\gnsim",
+                    "pretty": "⋧"
+                },
+                {
+                    "ugly": "\\\\nsubseteq",
+                    "pretty": "⊈",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\nsupseteq",
+                    "pretty": "⊉",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\subsetneq",
+                    "pretty": "⊊",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\supsetneq",
+                    "pretty": "⊋",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\subsetneqq",
+                    "pretty": "⫋"
+                },
+                {
+                    "ugly": "\\\\supsetneqq",
+                    "pretty": "⫌"
+                },
+                {
+                    "ugly": "\\\\land",
+                    "pretty": "∧"
+                },
+                {
+                    "ugly": "\\\\lor",
+                    "pretty": "∨"
+                },
+                {
+                    "ugly": "\\\\lnot",
+                    "pretty": "¬"
+                },
+                {
+                    "ugly": "\\\\nabla",
+                    "pretty": "∇"
+                },
+                {
+                    "ugly": "\\\\partial",
+                    "pretty": "∂"
+                },
+                {
+                    "ugly": "\\\\eth",
+                    "pretty": "ð"
+                },
+                {
+                    "ugly": "\\\\clubsuit",
+                    "pretty": "♣"
+                },
+                {
+                    "ugly": "\\\\diamondsuit",
+                    "pretty": "♢"
+                },
+                {
+                    "ugly": "\\\\heartsuit",
+                    "pretty": "♡"
+                },
+                {
+                    "ugly": "\\\\spadesuit",
+                    "pretty": "♠"
+                },
+                {
+                    "ugly": "\\\\ddots",
+                    "pretty": "⋱"
+                },
+                {
+                    "ugly": "\\\\Im",
+                    "pretty": "ℑ"
+                },
+                {
+                    "ugly": "\\\\Re",
+                    "pretty": "ℜ"
+                },
+                {
+                    "ugly": "\\\\emptyset",
+                    "pretty": "∅"
+                },
+                {
+                    "ugly": "\\\\imath",
+                    "pretty": "𝚤"
+                },
+                {
+                    "ugly": "\\\\jmath",
+                    "pretty": "𝚥"
+                },
+                {
+                    "ugly": "\\\\ell",
+                    "pretty": "ℓ"
+                },
+                {
+                    "ugly": "\\\\sharp",
+                    "pretty": "♯"
+                },
+                {
+                    "ugly": "\\\\flat",
+                    "pretty": "♭"
+                },
+                {
+                    "ugly": "\\\\natural",
+                    "pretty": "♮"
+                },
+                {
+                    "ugly": "\\\\diagdown",
+                    "pretty": "╲"
+                },
+                {
+                    "ugly": "\\\\diagup",
+                    "pretty": "╱"
+                },
+                {
+                    "ugly": "\\\\Finv",
+                    "pretty": "Ⅎ"
+                },
+                {
+                    "ugly": "\\\\Game",
+                    "pretty": "⅁"
+                },
+                {
+                    "ugly": "\\\\hslash",
+                    "pretty": "ℏ"
+                },
+                {
+                    "ugly": "\\\\mho",
+                    "pretty": "℧"
+                },
+                {
+                    "ugly": "\\\\prime",
+                    "pretty": "′"
+                },
+                {
+                    "ugly": "\\\\backprime",
+                    "pretty": "‵"
+                },
+                {
+                    "ugly": "\\\\surd",
+                    "pretty": "√"
+                },
+                {
+                    "ugly": "\\\\wp",
+                    "pretty": "℘"
+                },
+                {
+                    "ugly": "\\\\angle",
+                    "pretty": "∠"
+                },
+                {
+                    "ugly": "\\\\measuredangle",
+                    "pretty": "∡"
+                },
+                {
+                    "ugly": "\\\\sphericalangle",
+                    "pretty": "∢"
+                },
+                {
+                    "ugly": "\\\\complement",
+                    "pretty": "∁"
+                },
+                {
+                    "ugly": "\\\\triangledown",
+                    "pretty": "▽"
+                },
+                {
+                    "ugly": "\\\\triangle",
+                    "pretty": "△",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\blacklozenge",
+                    "pretty": "◆"
+                },
+                {
+                    "ugly": "\\\\blacksquare",
+                    "pretty": "◼"
+                },
+                {
+                    "ugly": "\\\\blacktriangle",
+                    "pretty": "▲",
+                    "post": "\\b|_"
+                },
+                {
+                    "ugly": "\\\\blacktriangledown",
+                    "pretty": "▼"
+                },
+                {
+                    "ugly": "\\\\circledS",
+                    "pretty": "ⓢ"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "watch": "tsc -watch -p ./",
+    "compile": "tsc -p ./",
+    "test": "tsc -p ./ && mocha -u tdd ./out/test",
+    "test-debug": "tsc -p ./ && mocha -u tdd --debug-brk=5858 ./out/test"
+  },
+  "dependencies": {
+    "copy-paste": "1.3.0",
+    "@types/copy-paste": "1.1.30"
+  },
+  "devDependencies": {
+    "typescript": "2.1.4",
+    "vscode": "^1.0.3",
+    "mocha": "^3.1.1",
+    "proxyquire": "1.7.10",
+    "@types/proxyquire": "1.3.27",
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.40"
+  },
+  "bugs": {
+    "url": "https://github.com/BRBoer/vsc-conceal/issues"
+  },
+  "homepage": "https://github.com/BRBoer/vsc-conceal/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BRBoer/vsc-conceal.git"
+  }
+}

@@ -1,0 +1,2 @@
+r:
+	lua hello.lua

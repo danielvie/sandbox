@@ -1,0 +1,26 @@
+name: My first workflow
+
+on: 
+    [push, pull_request]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+            - name: Run a one-line script
+              run: echo Hello, world!
+            - name: Run a multi-line script
+              run: |
+                echo Add other actions to build,
+                echo test, and deploy your project.
+            - name: install googletest
+              run: sudo apt-get install libgtest-dev
+            - name: build
+              run:
+                make build
+            - name: run test
+              run:
+                make run

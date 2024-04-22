@@ -1,0 +1,32 @@
+{
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "lint-staged": "lint-staged",
+    "new-example": "plop example",
+    "prepare": "husky install",
+    "prettier": "prettier --write .",
+    "update-templates": "node scripts/update-templates.mjs"
+  },
+  "pre-commit": "lint-staged",
+  "lint-staged": {
+    "!(**/.vercel/**/*)**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --no-ignore --max-warnings=0 --fix"
+    ],
+    "**/*.{json,md,mdx,css,html,yml,yaml,scss}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@vercel/fetch": "^6.2.0",
+    "dotenv": "^16.0.1",
+    "eslint": "latest",
+    "eslint-config-next": "canary",
+    "front-matter": "^4.0.2",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "plop": "^3.1.1",
+    "prettier": "^2.7.1"
+  }
+}

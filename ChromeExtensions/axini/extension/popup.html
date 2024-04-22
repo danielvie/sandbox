@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mado Extension</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body class="bg-gray-700 font-mono">
+    <!-- header information -->
+    <section class="text-xl text-center bg-[#3590b4]">
+        <img class="m-auto" width="65px" src="../icons/icon.png" alt="">
+        <h1 class="font-bold text-blue-100">Mado-MBT</h1>
+    </section>
+
+    <!-- body information -->
+    <!-- <div class="flex flex-col justify-center items-center px-2 pb-2"> -->
+    <div class="p-2">
+        <section class="flex min-w-[250px] flex-col justify-center items-center w-full mt-1">
+
+            <div class="flex justify-between w-full gap-[5px]">
+                <button id="btn-subhour2" class="px-0">-2h</button>
+                <button id="btn-subhour" class="px-0">-1h</1utton>
+                <button id="btn-addhour" class="px-0">+1h</1utton>
+                <button id="btn-addhour2" class="px-0">+2h</1utton>
+            </div>
+
+            <div class="flex w-full gap-1">
+                <button id="btn-clean-warns">Clean Warns</button>
+                <button id="btn-max-sv">Max SV</button>
+            </div>
+            
+            <div class="flex justify-between w-full gap-1">
+                <button id="btn-clean-tests">Clean TestSets</button>
+                <button id="btn-clean-notmaster">Clean NotMaster</button>
+                <button id="btn-del-section-notes">Del Section.notes</button>
+            </div>
+            <div class="grid grid-cols-12 justify-between w-full gap-1 items-center">
+                <input placeholder="channel" id="in-filter-channel" class="col-span-5 p-1 h-[33px] rounded relative top-[1px] bg-cyan-100 text-center" type="text">
+                <button id="btn-filter-by-channel" class="col-span-6">FilterByChannel</button>
+                <button id="btn-filter-by-channel-clear" class="col-span-1 h-8 bg-blue-300 hover:bg-blue-400"></button>
+            </div>
+            <div class="grid grid-cols-12 justify-between w-full gap-1 items-center">
+                <input placeholder="label" id="in-filter-label" class="col-span-5 p-1 h-[33px] rounded relative top-[1px] bg-cyan-100 text-center" type="text">
+                <button id="btn-filter-by-label" class="col-span-6">FilterByLabel</button>
+                <button id="btn-filter-by-label-clear" class="col-span-1 h-8 bg-blue-300 hover:bg-blue-400"></button>
+            </div>
+            <div class="grid grid-cols-12 justify-between w-full gap-1 items-center">
+                <input placeholder="note" id="in-filter-note" class="col-span-5 p-1 h-[33px] rounded relative top-[1px] bg-cyan-100 text-center" type="text">
+                <button id="btn-filter-by-note" class="col-span-6">FilterByNote</button>
+                <button id="btn-filter-by-note-clear" class="col-span-1 h-8 bg-blue-300 hover:bg-blue-400"></button>
+            </div>
+            <div class="grid grid-cols-12 gap-1 justify-between w-full items-center">
+                <input placeholder="name" id="in-filter-param-name" class="col-span-3 p-1 h-[33px] rounded relative top-[1px] bg-cyan-100 text-center" type="text">
+                <input placeholder="value" id="in-filter-param-value" class="col-span-3 p-1 h-[34px] rounded relative top-[1px] bg-cyan-100 text-center" type="text">
+                <button id="btn-filter-by-param" class="col-span-5">FilterByParam</button>
+                <button id="btn-filter-by-param-clear" class="col-span-1 h-8 bg-blue-300 hover:bg-blue-400"></button>
+            </div>
+            <div class="grid grid-cols-12 gap-1 justify-between w-full items-center">
+                <input placeholder="ini" id="in-filter-range-ini" class="col-span-3 p-1 h-[33px] rounded relative top-[1px] bg-cyan-100 text-center" type="text">
+                <input placeholder="end" id="in-filter-range-end" class="col-span-3 p-1 h-[34px] rounded relative top-[1px] bg-cyan-100 text-center" type="text">
+                <button id="btn-filter-by-range" class="col-span-5">FilterByRange</button>
+                <button id="btn-filter-by-range-clear" class="col-span-1 h-8 bg-blue-300 hover:bg-blue-400"></button>
+            </div>
+            <div class="flex justify-between w-full gap-1 items-center">
+                <input placeholder="adapter name" id="in-adapter-filter" class="h-[33px] p-1 rounded relative top-[1px] bg-cyan-100 text-center" type="text">
+                <button id="btn-adapters">Adapters</button>
+            </div>
+            <div class="flex justify-between w-full gap-1">
+                <button id="btn-goto-opt-vm">goto VM</button>
+                <button id="btn-setvm">Set VM</button>
+                <button id="btn-setvm-old">Set VM_old</button>
+                <!-- <button id="btn-setvm">Set VM optics</button> -->
+            </div>
+
+        </section>
+        
+        <!-- adapter list -->
+        <section id="adapter-list-section" class="flex flex-col justify-center items-center w-full mt-1">
+        <section id="ans" class="bg-gray-600 w-full rounded-sm p-2 text-gray-200 text-center">
+            <p class="text-red-200 uppercase text-[.7em]">no support! use it on your own!!</p>
+        </section>
+    </div>
+</body>
+<script type="module" src="popup.js"></script>
+</html>

@@ -1,0 +1,11 @@
+all: default
+
+default:
+	cmake -B ./build
+	cmake --build ./build
+	./build/hello
+
+c: clean
+
+clean:
+	rm -rf build

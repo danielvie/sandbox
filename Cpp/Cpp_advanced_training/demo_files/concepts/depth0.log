@@ -1,0 +1,10 @@
+g++-11.2.0 -std=c++20 -fconcepts-diagnostics-depth=0 -I ../tools -o requires requires.cpp
+requires.cpp: In function ‘int main()’:
+requires.cpp:84:9: error: no matching function for call to ‘bark(std::__cxx11::list<int, std::allocator<int> >&)’
+   84 |     bark(li);
+      |     ~~~~^~~~
+requires.cpp:45:6: note: candidate: ‘template<class auto:14>  requires  barking<auto:14> void bark(auto:14)’
+   45 | void bark(barking auto dog){
+      |      ^~~~
+requires.cpp:45:6: note:   template argument deduction/substitution failed:
+requires.cpp:45:6: note: constraints not satisfied

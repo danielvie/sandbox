@@ -1,0 +1,22 @@
+g++-11.2.0 -std=c++20 -fconcepts-diagnostics-depth=2 -I ../tools -o requires requires.cpp
+requires.cpp: In function ‘int main()’:
+requires.cpp:84:9: error: no matching function for call to ‘bark(std::__cxx11::list<int, std::allocator<int> >&)’
+   84 |     bark(li);
+      |     ~~~~^~~~
+requires.cpp:45:6: note: candidate: ‘template<class auto:14>  requires  barking<auto:14> void bark(auto:14)’
+   45 | void bark(barking auto dog){
+      |      ^~~~
+requires.cpp:45:6: note:   template argument deduction/substitution failed:
+requires.cpp:45:6: note: constraints not satisfied
+requires.cpp: In substitution of ‘template<class auto:14>  requires  barking<auto:14> void bark(auto:14) [with auto:14 = std::__cxx11::list<int, std::allocator<int> >]’:
+requires.cpp:84:9:   required from here
+requires.cpp:40:9:   required for the satisfaction of ‘barking<auto:14>’ [with auto:14 = std::__cxx11::list<int, std::allocator<int> >]
+requires.cpp:41:5:   in requirements with ‘T t’ [with T = std::__cxx11::list<int, std::allocator<int> >]
+requires.cpp:42:15: note: the required expression ‘t.bark()’ is invalid, because
+   42 |         t.bark();
+      |         ~~~~~~^~
+requires.cpp:42:11: error: ‘class std::__cxx11::list<int, std::allocator<int> >’ has no member named ‘bark’; did you mean ‘back’?
+   42 |         t.bark();
+      |         ~~^~~~
+      |         back
+

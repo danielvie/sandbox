@@ -1,0 +1,9 @@
+# python env
+venv
+__pycache__
+
+# build files
+build
+dist
+*.spec
+*.txt

@@ -1,0 +1,45 @@
+export enum ACTION {
+  ADAPTERS = 0,
+  ADDHOUR = 1,
+  ADDHOUR2 = 2,
+  CLEAN_NOTMASTER = 3,
+  CLEAN_TESTS = 4,
+  CLEAN_WARNS = 5,
+  CLEAR_FILTER = 6,
+  DEL_SECTION_NOTES = 7,
+  MAX_SV = 8,
+  FILTER_BY_CHANNEL = 9,
+  FILTER_BY_LABEL = 10,
+  FILTER_BY_NOTE = 11,
+  FILTER_BY_PARAM = 12,
+  FILTER_BY_RANGE = 13,
+  GET_MOUSE = 14,
+  GOTOOPT = 15,
+  PAGE_CHANGED = 16,
+  PLAY = 17,
+  SELECT_ADAPTER = 18,
+  SET_VM = 19,
+  SET_VM_OLD = 20,
+  SUBHOUR = 21,
+  SUBHOUR2 = 22,
+}
+
+export type VMCONFIG = {
+  EMAIL?: string;
+  SMOKE_COMMENT?: string;
+  PROJECT_BUILD_XML_PATH: string;
+  MAIN_COMPONENT: string;
+  PRODUCT?: string;
+  TARGET?: string;
+  CPU?: string;
+  CONFIGS?: string;
+  PLATFORM?: string;
+  CUSTOM_TESTS?: string;
+  CUSTOM_MAIN_COMPONENT?: string;
+  CLEAN_VM?: string;
+  EXPORT_VM?: string;
+  FINAL_EXPORT_FOLDER?: string;
+  FOLDER_NAME_ON_EXPORT?: string;
+  QUALITY_GATE?: string;
+  USE_TEST_EXECUTOR?: string;
+};

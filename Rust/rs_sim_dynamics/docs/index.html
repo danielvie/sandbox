@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation Mass-Spring</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+
+</head>
+<body class="bg-gray-50 p-1 font-mono">
+    <div id="bla"></div>
+    <div class="m-1">
+        v.0.11
+    </div>
+    <div class="flex gap-1 text-xs">
+        <div class="w-14 text-right">
+            <span>x1_0:</span>
+            <input id="value-x1" class="bg-sky-50 border-2 border-gray-300 rounded-sd w-14 p-2" type="number" value="0">
+        </div>
+        <div class="w-14 text-right">
+            <span>x2_0:</span>
+            <input id="value-x2" class="bg-sky-50 border-2 border-gray-300 rounded-sm w-14 p-2" type="number" value="0">
+        </div>
+        <div class="w-14 text-right">
+            <span>m1:</span>
+            <input id="value-m1" class="bg-sky-50 border-2 border-gray-300 rounded-sm w-14 p-2" type="number" value="1">
+        </div>
+        <div class="w-14 text-right">
+            <span>m2:</span>
+            <input id="value-m2" class="bg-sky-50 border-2 border-gray-300 rounded-sm w-14 p-2" type="number" value="1">
+        </div>
+        <div class="w-14 text-right">
+            <span>c:</span>
+            <input id="value-c" class="bg-sky-50 border-2 border-gray-300 rounded-sd w-14 p-2" type="number" value="0.1">
+        </div>
+        <div class="w-14 text-right">
+            <span>k:</span>
+            <input id="value-k" class="bg-sky-50 border-2 border-gray-300 rounded-sm w-14 p-2" type="number" value="1">
+        </div>
+    </div>
+    <div class="flex gap-1 mt-2 text-xs">
+        <div class="w-16 text-right">
+            <span>kp:</span>
+            <input id="value-kp" class="bg-sky-50 border-2 border-gray-300 rounded-sd w-16 p-2" type="number" value="3">
+        </div>
+        <div class="w-16 text-right">
+            <span>ki:</span>
+            <input id="value-ki" class="bg-sky-50 border-2 border-gray-300 rounded-sm w-16 p-2" type="number" value="0.5">
+        </div>
+        <div class="w-16 text-right">
+            <span>kd:</span>
+            <input id="value-kd" class="bg-sky-50 border-2 border-gray-300 rounded-sm w-16 p-2" type="number" value="20">
+        </div>
+        <div class="w-16 text-right">
+            <span>ref:</span>
+            <input id="value-setpoint" class="bg-sky-50 border-2 border-gray-300 rounded-sm w-16 p-2" type="number" value="8">
+        </div>
+        <div class="w-16 text-right">
+            <span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <button id="param-set-btn" class="bg-sky-800 p-2 rounded-md text-gray-100">SET</button>
+        </div>
+    </div>
+    <div class="text-red-800 mt-2" id="timer">timer: </div>
+    <div class="">
+        <canvas id="model-canvas" class="border-2 border-gray-300"></canvas>
+    </div>
+    <div class="w-[22em] h-[22em] mt-2">
+        <canvas id="myChart" class="border-2 border-gray-300"></canvas>
+    </div>
+   
+   <button id="ok-btn" class="bg-sky-800 p-2 rounded-md text-gray-100 hover:bg-sky-700">reset</button>
+   <button id="fit-y-btn" class="bg-sky-800 p-2 rounded-md text-gray-100 hover:bg-sky-700">fit y</button>
+   <button id="control-on-btn" class="bg-red-800 p-2 rounded-md text-gray-100">OFF</button>
+   <button id="controltype-btn" class="bg-sky-800 p-2 rounded-md text-gray-100">&nbsp;</button>
+   <button id="controlstep-btn" class="bg-sky-800 p-2 rounded-md text-gray-100">STEP</button>
+   <script src="./bootstrap.js"></script>
+   <script>
+//         const ctx = document.getElementById('myChart')
+
+//         new Chart(ctx, {
+//     type: 'bar',
+//     data: {
+//       labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+//       datasets: [{
+//         label: '# of Votes',
+//         data: [12, 19, 3, 5, 2, 3],
+//         borderWidth: 1
+//       }]
+//     },
+//     options: {
+//       scales: {
+//         y: {
+//           beginAtZero: true
+//         }
+//       }
+//     }
+//   });
+   </script>
+</body>
+</html>
