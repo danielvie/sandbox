@@ -1,0 +1,56 @@
+# TODO: SysML v2 Parser and Graphical Editor POC
+
+- [x] Initialize Rust Backend
+  - [x] Create `backend/Cargo.toml` with dependencies
+  - [x] Verify compilation of `tree-sitter-sysml`
+- [x] Implement Parsing & Resolution
+  - [x] Implement AST structures (Package, Part, Port, Connection) and error reporting in `src/parser.rs`
+  - [x] Implement Tree-sitter CST traversal and name resolver in `src/parser.rs`
+  - [x] Write unit tests to verify parsing of a sample SysML v2 file
+- [x] Implement Source Mutations
+  - [x] Implement text rewriting/replacements based on visual changes in `src/mutator.rs`
+- [x] Implement Web Server
+  - [x] Implement Axum server with `/api/parse` and `/api/mutate` endpoints in `src/main.rs`
+  - [x] Configure CORS middleware
+- [x] Initialize React Frontend
+  - [x] Scaffold React + TS Vite project in `frontend/`
+  - [x] Install `@xyflow/react`, `@monaco-editor/react`, and other dependencies
+- [x] Implement Frontend UI
+  - [x] Create split-pane layout with custom dark glassmorphic styling
+  - [x] Implement custom React Flow nodes for Parts and Ports
+  - [x] Integrate Monaco Editor and sync edits to the canvas
+  - [x] Support visual mutations (adding, renaming, deleting elements) and syncing back to the editor
+  - [x] Integrate Agentation visual feedback helper
+  - [x] Integrate Vim Mode toggle inside the Monaco Editor status bar
+  - [x] Change the visual design system to a sober light mode
+  - [x] Persist Vim Mode status in localStorage (useStorage behavior)
+  - [x] Integrate system clipboard synchronization for Vim Mode yank/paste operations
+- [x] Setup Orchestration & Run
+  - [x] Create `Taskfile.yml` in the project root
+- [x] Verification & Walkthrough
+  - [x] Verify end-to-end integration and create walkthrough
+- [x] Vim Mode Clipboard Fix & Testing
+  - [x] Add Playwright dependency and script to `frontend/package.json`
+  - [x] Create Playwright config `frontend/playwright.config.ts`
+  - [x] Write E2E test `frontend/e2e/clipboard.spec.ts`
+  - [x] Add paste listener & Diagnostics Panel in `frontend/src/App.tsx`
+  - [x] Add task `test:e2e` to `Taskfile.yml`
+  - [x] Run build and execute tests to confirm success
+- [x] Fix Bodyless Part Visual Port Addition Bug & Test
+  - [x] Identify syntax error with adding ports to bodyless parts in parser.rs
+  - [x] Fix Playwright webServer validation timeout in playwright.config.ts
+  - [x] Update visual edit E2E test locator for rename input in visual_edit.spec.ts
+  - [x] Run all E2E tests and ensure they pass
+  - [x] Update walkthrough.md with final E2E test results
+- [x] Fix Formatting / Blank Line Spacing Bug & Test
+  - [x] Implement get_whitespace_before_on_same_line in backend/src/mutator.rs
+  - [x] Update AddPart, AddPort, AddConnection to use it
+  - [x] Add unit test in mutator.rs for spacing when adding multiple ports
+  - [x] Run backend unit tests and ensure they pass
+  - [x] Run all E2E tests and ensure they pass
+  - [x] Update walkthrough.md with new results
+- [x] Fix Monaco Cursor Font Misalignment
+  - [x] Update fontFamily option in frontend/src/App.tsx
+  - [x] Add monospace fallback CSS rule for .monaco-editor in frontend/src/index.css
+  - [x] Verify using E2E tests and manual review
+  - [x] Update walkthrough.md with results

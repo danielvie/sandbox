@@ -1,0 +1,13 @@
+/target/
+
+# Rust build artifacts
+*.rs.bk
+
+# Local environment/config
+.env
+.env.*
+!.env.example
+
+# Editor/OS noise
+.DS_Store
+Thumbs.db

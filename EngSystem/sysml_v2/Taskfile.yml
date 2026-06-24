@@ -1,0 +1,58 @@
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task --list
+
+  back:run:
+    desc: Start the Rust Axum backend server
+    dir: backend
+    cmds:
+      - cargo run
+
+  front:run:
+    desc: Start the React frontend dev server (Vite)
+    dir: frontend
+    cmds:
+      - npm run dev
+
+  run:
+    desc: Start Front and Back in parallel
+    deps: [back:run, front:run]
+
+  init:
+    desc: Start Front and Back in parallel
+    deps: [_back:init]
+
+  _back:init:
+    internal: true
+    desc: Install front dependencies
+    dir: "frontend"
+    cmds:
+      - npm install
+
+  back:test:
+    desc: Run backend unit tests
+    dir: backend
+    cmds:
+      - cargo test
+
+  build:
+    desc: Build both backend and frontend for production
+    cmds:
+      - cd backend && cargo build --release
+      - cd frontend && npm run build
+
+  clean:
+    desc: Remove generated build artifacts
+    cmds:
+      - pwsh -NoProfile -Command "Remove-Item -R -Force backend/target"
+      - pwsh -NoProfile -Command "Remove-Item -R -Force frontend/node_modules"
+    ignore_error: true
+
+  test:e2e:
+    desc: Run frontend Playwright end-to-end tests
+    dir: frontend
+    cmds:
+      - npx playwright test
